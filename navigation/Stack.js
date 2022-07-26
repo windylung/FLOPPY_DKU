@@ -33,14 +33,52 @@ const ScreenMain = ({ navigation : {navigate} }) => (
     <TouchableOpacity onPress={() => navigate("stamp")}>
       <Text>꽃다발 스탬프</Text>
     </TouchableOpacity>
+    <TouchableOpacity onPress={() => navigate("planManagement")}>
+      <Text>플랜구독</Text>
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => navigate("order")}>
+      <Text>주문한 꽃다발</Text>
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => navigate("news")}>
+      <Text>FLOPPY 소식</Text>
+    </TouchableOpacity>
   </View>
 );
 
-  const ScreenTwo = () => 
+  const ScreenStamp = () => 
   (
     <View>
       <View style={stamp.container}></View>
       <Text style={stamp.title}>stamp history</Text>
+    </View>
+  );
+
+  const ScreenPlanManagement =  ({ navigation : {navigate} }) => 
+  (
+    <TouchableOpacity onPress={() => navigate("planList")}>
+      <Text>구독중인 플랜</Text>
+    </TouchableOpacity>
+  );
+
+  const ScreenOrder = () => 
+  (
+    <View>
+      <Text></Text>
+    </View>
+  );
+
+  const ScreenNews = () => 
+  (
+    <View>
+      <Text>FLOPPY 이야기</Text>
+    </View>
+  );
+
+  const ScreenPlanList = () => 
+  (
+    <View>
+      <Text>연인플랜</Text>
+      <Text>가족플랜</Text>
     </View>
   );
 
@@ -50,7 +88,11 @@ const NativeStack = createNativeStackNavigator();
 const Stack = () => (
     <NativeStack.Navigator>
         <NativeStack.Screen name = "main" component = {ScreenMain}/>
-        <NativeStack.Screen name = "stamp" component= {ScreenTwo} />
+        <NativeStack.Screen name = "stamp" component= {ScreenStamp} />
+        <NativeStack.Screen name = "planManagement" component={ScreenPlanManagement}/>
+        <NativeStack.Screen name = "order" component={ScreenOrder}/>
+        <NativeStack.Screen name = "news" component={ScreenNews}/>
+        <NativeStack.Screen name = "planList" component={ScreenPlanList}/>
     </NativeStack.Navigator>
 );
 
