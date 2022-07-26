@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { COLOR_ORANGE } from "../colors";
+import Main from "../screens/main";
 
 
 const stamp = StyleSheet.create({
@@ -30,6 +31,7 @@ const stamp = StyleSheet.create({
 )
 const ScreenMain = ({ navigation : {navigate} }) => (
   <View>
+    <Main/>
     <TouchableOpacity onPress={() => navigate("stamp")}>
       <Text>꽃다발 스탬프</Text>
     </TouchableOpacity>
@@ -71,6 +73,7 @@ const ScreenMain = ({ navigation : {navigate} }) => (
   (
     <View>
       <Text>FLOPPY 이야기</Text>
+      <Image source= {require('../screens/logo.png')} style={{height:10,width:300, resizeMode:'contain'}}></Image>
     </View>
   );
 
