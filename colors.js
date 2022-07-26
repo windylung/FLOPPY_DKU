@@ -1,4 +1,1 @@
-const colors = {
-    
-};
-export default colors;
+export const COLOR_ORANGE = "#ff9156";
