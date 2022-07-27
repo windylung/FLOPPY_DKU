@@ -1,20 +1,21 @@
 import React from "react";
-import { Image, View} from 'react-native';
+import { Image, View, StyleSheet, Text } from "react-native";
 import { COLOR_ORANGE } from "../colors";
-const TopBar = () => (
-    // <View style = {{
-    //     flex: 1,
 
-    //     backgroundColor : COLOR_ORANGE, 
-    // }}>
-    // </View>
 
-    <Image source={require("../screens/logo.png")} style={{width: '50%', height: '20%'}} ></Image>
-    
-);
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+ 
 const Main = () => (
-    <TopBar/>
+        <View style={{ height: '100%' }}>
+            <View style={{height: '10%', backgroundColor: COLOR_ORANGE}}>
+                <Image source={require("./logo.png")} style={{width:'40%', height:'100%', marginTop: 10,overflow: 'hidden'}}></Image>
+            </View>
+        </View>
+        
 );
 
 export default Main;

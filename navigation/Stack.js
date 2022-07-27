@@ -44,6 +44,7 @@ const ScreenMain = ({ navigation : {navigate} }) => (
     <TouchableOpacity onPress={() => navigate("news")}>
       <Text>FLOPPY 소식</Text>
     </TouchableOpacity>
+  
   </View>
 );
 
@@ -89,7 +90,7 @@ const ScreenMain = ({ navigation : {navigate} }) => (
 const NativeStack = createNativeStackNavigator();
 
 const Stack = () => (
-    <NativeStack.Navigator>
+    <NativeStack.Navigator screenOptions={{headerShown: false}}>
         <NativeStack.Screen name = "main" component = {ScreenMain}/>
         <NativeStack.Screen name = "stamp" component= {ScreenStamp} />
         <NativeStack.Screen name = "planManagement" component={ScreenPlanManagement}/>
