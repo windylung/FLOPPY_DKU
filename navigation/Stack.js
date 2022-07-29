@@ -31,8 +31,38 @@ const stamp = StyleSheet.create({
 )
 const ScreenMain = ({ navigation : {navigate} }) => (
   <View>
-    <Main/>
-    <TouchableOpacity onPress={() => navigate("stamp")}>
+    <View style={{height: '10%', backgroundColor: COLOR_ORANGE}}>
+      <Image source={require("../screens/logo.png")} style={{width:'40%', height:'100%', marginTop: 10,overflow: 'hidden'}}></Image>
+    </View>
+    <View style={{ height: '100%', margin: 10}}>
+            <View>
+                <Text style={{fontSize : 20, fontWeight: "600"}}>MAY</Text>
+                <Text style={{fontSize : 20, textAlign: 'center'}}>4   5   6   7   8   9   10</Text>
+            </View>
+
+            <View>
+                <Text style = {{fontSize : 20}}>제작 현황</Text>
+                <View style={{width:'auto' ,height: 150, backgroundColor : COLOR_ORANGE, borderRadius: 10, opacity: 0.15}}>
+                </View>
+            </View>
+
+            <View style={{flexDirection: "row", height: 56, marginVertical: 10, justifyContent: 'space-around'}}>
+              <TouchableOpacity onPress={() => navigate("stamp")} style={{width:158 ,height: 56, backgroundColor : COLOR_ORANGE, borderRadius: 10, alignItems: 'center', justifyContent: 'center'}}>
+                <Text style={{textAlign: 'center'}}>꽃다발 스탬프</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigate("planManagement")} style={{width:158 ,height: 56, backgroundColor : COLOR_ORANGE, borderRadius: 10, alignItems: 'center', justifyContent: 'center'}}>
+                <Text>플랜 구독/관리</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <Text>주문한 꽃다발</Text>
+              <View style={{width:'auto', height: 150, backgroundColor : COLOR_ORANGE, borderRadius: 10, opacity: 0.15}}>
+                <Text>5월 12일(2회차)튤립</Text>
+              </View>
+            </View>
+            
+        </View>
+    {/* <TouchableOpacity onPress={() => navigate("stamp")}>
       <Text>꽃다발 스탬프</Text>
     </TouchableOpacity>
     <TouchableOpacity onPress={() => navigate("planManagement")}>
@@ -44,7 +74,7 @@ const ScreenMain = ({ navigation : {navigate} }) => (
     <TouchableOpacity onPress={() => navigate("news")}>
       <Text>FLOPPY 소식</Text>
     </TouchableOpacity>
-  
+   */}
   </View>
 );
 
@@ -58,7 +88,7 @@ const ScreenMain = ({ navigation : {navigate} }) => (
 
   const ScreenPlanManagement =  ({ navigation : {navigate} }) => 
   (
-    <TouchableOpacity onPress={() => navigate("planList")}>
+    <TouchableOpacity onPress={() => navigate("Tabs", {screen : ""})}>
       <Text>구독중인 플랜</Text>
     </TouchableOpacity>
   );
@@ -87,7 +117,7 @@ const ScreenMain = ({ navigation : {navigate} }) => (
   );
 
 
-const NativeStack = createNativeStackNavigator();
+export const NativeStack = createNativeStackNavigator();
 
 const Stack = () => (
     <NativeStack.Navigator screenOptions={{headerShown: false}}>

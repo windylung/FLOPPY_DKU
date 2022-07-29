@@ -3,13 +3,14 @@ import { Image, View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { COLOR_ORANGE } from "../colors";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
 });
  
-const Main = ({ navigation : {navigate} }) => (
+const Main = () => (
         <View style={{ height: '100%', margin: 10 }}>
             <View style={{height: '10%', backgroundColor: COLOR_ORANGE}}>
                 <Image source={require("./logo.png")} style={{width:'40%', height:'100%', marginTop: 10,overflow: 'hidden'}}></Image>
@@ -30,7 +31,7 @@ const Main = ({ navigation : {navigate} }) => (
               <View style={{width:158 ,height: 56, backgroundColor : COLOR_ORANGE, marginRight: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center'}}>
                 <Text style={{textAlign: 'center'}}>꽃다발 스탬프</Text>
               </View>
-              <TouchableOpacity onPress={() => navigate("planManagement")} style={{width:158 ,height: 56, backgroundColor : COLOR_ORANGE, marginHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center'}}>
+              <TouchableOpacity onPress={(event) => console.log(event)} style={{width:158 ,height: 56, backgroundColor : COLOR_ORANGE, marginHorizontal: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center'}}>
                 <Text>플랜 구독/관리</Text>
               </TouchableOpacity>
             </View>
