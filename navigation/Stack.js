@@ -73,7 +73,7 @@ const ScreenMain = ({ navigation : {navigate} }) => {
               </View>
               <View>
                 <Text>주문한 꽃다발</Text>
-                <View style={{width:'auto', height: 150, backgroundColor : COLOR_ORANGE, borderRadius: 10, opacity: 0.15}}>
+                              <View style={{width:'auto', height: 150, backgroundColor : COLOR_ORANGE, borderRadius: 10, opacity: 0.15}}>
                   <Text>5월 12일(2회차)튤립</Text>
                 </View>
               </View>
