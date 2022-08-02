@@ -6,31 +6,6 @@ import { COLOR_ORANGE } from "../colors";
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 
 
-
-const stamp = StyleSheet.create({
-  container : {
-    flex: 1,
-    margin: 10,
-    paddingTop: 250,
-    backgroundColor: COLOR_ORANGE,
-    textAlign: "center",
-  },
-  title: {
-    marginTop: 16,
-    paddingVertical: 8,
-    borderWidth: 4,
-    borderColor: "#20232a",
-    borderRadius: 6,
-    backgroundColor: "#61dafb",
-    color: "#20232a",
-    textAlign: "center",
-    fontSize: 30,
-    fontWeight: "bold"
-  }
-
-}
-
-)
 const ScreenMain = ({ navigation : {navigate} }) => {
   let now = new Date();
   let month = (now.getMonth() + 1).toLocaleString;
