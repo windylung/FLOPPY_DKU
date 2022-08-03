@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  PixelRatio
+  PixelRatio,
 } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { COLOR_BG, COLOR_GREY, COLOR_ORANGE } from "../colors";
-import { ScreenWidth, ScreenHEIGHT } from "../resposiveScreen";
+import { ScreenWidth, ScreenHEIGHT, ScreenFONT } from "../resposiveScreen";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
@@ -17,16 +17,33 @@ import { format, formatDistance, formatRelative, subDays } from "date-fns";
 
 const styles = StyleSheet.create({
   title: {
-    // fontFamily: 
-    fontSize: 18,
-    fontWeight: "500",
-    color: 'black',
+    // fontFamily:
+    fontSize: ScreenFONT(18),
+    fontWeight: "600",
+    color: "black",
+    marginBottom: ScreenHEIGHT(6),
   },
   subTitle: {
-    
-    fontSize: 14,
+    fontSize: ScreenFONT(14),
     fontWeight: "500",
     color: COLOR_GREY,
+  },
+  btn: {
+    width: ScreenWidth(165),
+    height: ScreenHEIGHT(165),
+    backgroundColor: "white",
+    borderRadius: 15,
+    paddingHorizontal: ScreenWidth(20),
+    paddingVertical: ScreenHEIGHT(20),
+  },
+
+  btnView: {
+    width: ScreenWidth(390),
+    height: ScreenHEIGHT(165),
+    paddingHorizontal: ScreenWidth(20),
+    marginBottom: ScreenHEIGHT(20),
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
 
@@ -35,43 +52,66 @@ const ScreenMain = ({ navigation: { navigate } }) => {
   // let month = (now.getMonth() + 1).toLocaleString;
   // let monthString = now.toLocaleString("en-US", { month: "long" });
   // let date = now.getDate();
-  console.log(PixelRatio.get())
+  console.log(PixelRatio.get());
   return (
     <View>
-    
-      <View style={{backgroundColor: COLOR_ORANGE, height: 101 ,justifyContent: 'flex-end', alignItems: 'flex-start'}}>
-        <Image source={require("../logo_orange.png")} style= {{height: ScreenHEIGHT(36), width:ScreenWidth(137)}}></Image>
+      <View
+        style={{
+          backgroundColor: COLOR_ORANGE,
+          height: 101,
+          justifyContent: "flex-end",
+          alignItems: "flex-start",
+        }}
+      >
+        <Image
+          source={require("../logo_orange.png")}
+          style={{ height: ScreenHEIGHT(36), width: ScreenWidth(137) }}
+        ></Image>
       </View>
 
-      <View style={{backgroundColor: COLOR_BG}}>
-      <View style={{backgroundColor: 'white', height: ScreenHEIGHT(162), width: ScreenWidth(350), marginHorizontal: ScreenWidth(20), marginVertical: ScreenHEIGHT(29)}}/>
-      <View>
-        <TouchableOpacity>
-          <Text style={styles.title}>꽃다발 주문하기</Text>
-          <Text style={styles.subTitle}>꽃다발 예약</Text>
-        </TouchableOpacity>
+      <View style={{ backgroundColor: COLOR_BG }}>
+        <View
+          style={{
+            backgroundColor: "white",
+            height: ScreenHEIGHT(162),
+            width: ScreenWidth(350),
+            marginHorizontal: ScreenWidth(20),
+            marginTop: ScreenHEIGHT(29),
+            marginBottom: ScreenHEIGHT(32),
+            // making px
+            borderRadius: 15,
+          }}
+        />
+        <View>
+          <View style={styles.btnView}>
+            <TouchableOpacity
+              style={[styles.btn, { backgroundColor: COLOR_ORANGE }]}
+              onPress={() => navigate("order")}
+            >
+              {/* () => navigate("Tabs", { screen: "" }) */}
+              <Text style={styles.title}>꽃다발{"\n"}주문하기</Text>
+              <Text style={styles.subTitle}>꽃다발 예약</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity style={{width: ScreenWidth(165),height: ScreenHEIGHT(165), backgroundColor: COLOR_ORANGE}}>
-          <Text style={styles.title}>꽃다발 스탬프</Text>
-          <Text style={styles.subTitle}>주문 내역 확인</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.btn}>
+              <Text style={styles.title}>꽃다발{"\n"}스탬프</Text>
+              <Text style={styles.subTitle}>주문 내역 확인</Text>
+            </TouchableOpacity>
+          </View>
 
-        <TouchableOpacity>
-          <Text style={styles.title}>플랜 구독/관리</Text>
-          <Text style={styles.subTitle}>꽃다발 주문 플랜 구독</Text>
-        </TouchableOpacity>
+          <View style={styles.btnView}>
+            <TouchableOpacity style={styles.btn}>
+              <Text style={styles.title}>플랜{"\n"}구독/관리</Text>
+              <Text style={styles.subTitle}>주문 플랜 구독</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity>
-          <Text style={styles.title}>FLOPPY 이야기</Text>
-          <Text style={styles.subTitle}>FLOPPY의 소식</Text>
-        </TouchableOpacity>
-      </View>        
-    </View>
-      
-      
-
-
-
+            <TouchableOpacity style={styles.btn}>
+              <Text style={styles.title}>FLOPPY{"\n"}이야기</Text>
+              <Text style={styles.subTitle}>FLOPPY의 소식</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
     </View>
   );
 };
