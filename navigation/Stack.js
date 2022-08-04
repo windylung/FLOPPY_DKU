@@ -251,7 +251,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => (
   </TouchableOpacity>
 );
 
-const ScreenOrder = () => {
+const ScreenOrder = ({ navigation: { navigate } }) => {
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
@@ -286,9 +286,10 @@ const ScreenOrder = () => {
             marginBottom: 25,
           }]}
         >
-          <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-            구독 추가하기
-          </Text>
+          <TouchableOpacity onPress={()=>navigate("planList")}>
+            <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+            구독 추가하기</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
