@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,9 @@ import {
   COLOR_ORANGE,
 } from "../colors";
 import { ScreenWidth, ScreenHEIGHT, ScreenFONT } from "../resposiveScreen";
+import Modal from "react-native-modal";
+import styled from "styled-components/native";
+
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
@@ -24,17 +27,19 @@ import { format, formatDistance, formatRelative, subDays } from "date-fns";
 
 const OrderPlanView = (props) => (
   <View
-    style={[{
-      height: ScreenHEIGHT(75.6),
-      borderColor: COLOR_ORANGE,
-      borderRadius: 10,
-      borderWidth: 1.9,
-      flexDirection: "row",
-      paddingHorizontal: 30,
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: 25,
-    }]}
+    style={[
+      {
+        height: ScreenHEIGHT(75.6),
+        borderColor: COLOR_ORANGE,
+        borderRadius: 10,
+        borderWidth: 1.9,
+        flexDirection: "row",
+        paddingHorizontal: 30,
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 25,
+      },
+    ]}
   >
     <View style={{ flexDirection: "row", alignItems: "center" }}>
       <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
@@ -49,6 +54,16 @@ const OrderPlanView = (props) => (
     </TouchableOpacity>
   </View>
 );
+
+const planListModal = styled.View`
+  flex-direction: column;
+  align-items: center;
+  /* 모달창 크기 조절 */
+  width: 320px;
+  height: 220px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+`;
 const styles = StyleSheet.create({
   statusView: {
     backgroundColor: "white",
@@ -273,22 +288,26 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
         <OrderPlanView planName={"연인플랜"} num={3} />
         <OrderPlanView planName={"가족플랜"} num={1} />
         <View
-          style={[styles.shadow, {
-            height: ScreenHEIGHT(75.6),
-            backgroundColor: COLOR_LGREY,
-            borderColor: COLOR_LGREY,
-            borderRadius: 10,
-            // borderWidth: 1.8,
-            flexDirection: "row",
-            paddingHorizontal: 30,
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 25,
-          }]}
+          style={[
+            styles.shadow,
+            {
+              height: ScreenHEIGHT(75.6),
+              backgroundColor: COLOR_LGREY,
+              borderColor: COLOR_LGREY,
+              borderRadius: 10,
+              // borderWidth: 1.8,
+              flexDirection: "row",
+              paddingHorizontal: 30,
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 25,
+            },
+          ]}
         >
-          <TouchableOpacity onPress={()=>navigate("planList")}>
+          <TouchableOpacity onPress={() => navigate("planList")}>
             <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-            구독 추가하기</Text>
+              구독 추가하기
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -306,17 +325,55 @@ const ScreenNews = () => (
   </View>
 );
 
-const ScreenPlanList = () => (
-  <View>
-    <Text>연인플랜</Text>
-    <Text>가족플랜</Text>
-  </View>
-);
+const PlanListButton = () => {
+  return (
+    <View style={{height: ScreenHEIGHT(100), s}}>
+
+    </View>
+  );
+}
+const ScreenPlanList = () => {
+  const [modalVisible, setModalVisible] = useState(true);
+  return (
+    <View>
+      <Modal
+        style={{
+          borderRadius: 10,
+          backgroundColor: "white",
+        }}
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(false)}
+        onSwipeComplete={() => setModalVisible(false)}
+        animationIn={"slideInUp"}
+        animationOut={"slideInDown"}
+      >
+        <View
+          style={{
+            paddingVertical: ScreenHEIGHT(20),
+            paddingHorizontal: ScreenWidth(20),
+          }}
+        >
+          <View>
+            <Text style={[styles.title, { fontSize: 22, marginBottom: 8}]}>
+              구독 플랜 추가하기
+            </Text>
+            <Text style={[styles.subTitle, { fontSize: 16 }]}>
+              새롭게 구독할 플랜을 선택해주세요
+            </Text>
+          </View>
+          <View>
+
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
 
 export const NativeStack = createNativeStackNavigator();
 
 const Stack = () => (
-  <NativeStack.Navigator screenOptions={{ headerShown: false }}>
+  <NativeStack.Navigator screenOptions={{ headerShown: true }}>
     <NativeStack.Screen name="main" component={ScreenMain} />
     <NativeStack.Screen
       name="planManagement"
