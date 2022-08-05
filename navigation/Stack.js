@@ -373,7 +373,7 @@ const ScreenPlanList = () => {
 export const NativeStack = createNativeStackNavigator();
 
 const Stack = () => (
-  <NativeStack.Navigator screenOptions={{ headerShown: true }}>
+  <NativeStack.Navigator screenOptions={{ headerShown: false }}>
     <NativeStack.Screen name="main" component={ScreenMain} />
     <NativeStack.Screen
       name="planManagement"
