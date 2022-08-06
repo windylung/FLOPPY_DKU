@@ -19,8 +19,10 @@ import {
 import { ScreenWidth, ScreenHEIGHT, ScreenFONT } from "../resposiveScreen";
 import Modal from "react-native-modal";
 import styled from "styled-components/native";
+import CalendarPicker from 'react-native-calendar-picker';
 
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
+import moment from "moment";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -311,6 +313,9 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
           </TouchableOpacity>
         </View>
       </View>
+        <TouchableOpacity onPress={() => navigate("orderDate")}>
+          <Text>Next</Text>
+        </TouchableOpacity>
     </View>
   );
 };
@@ -326,12 +331,8 @@ const ScreenNews = () => (
 );
 
 const PlanListButton = () => {
-  return (
-    <View style={{height: ScreenHEIGHT(100), s}}>
-
-    </View>
-  );
-}
+  return <View style={{ height: ScreenHEIGHT(100), s }}></View>;
+};
 const ScreenPlanList = () => {
   const [modalVisible, setModalVisible] = useState(true);
   return (
@@ -354,21 +355,101 @@ const ScreenPlanList = () => {
           }}
         >
           <View>
-            <Text style={[styles.title, { fontSize: 22, marginBottom: 8}]}>
+            <Text style={[styles.title, { fontSize: 22, marginBottom: 8 }]}>
               구독 플랜 추가하기
             </Text>
             <Text style={[styles.subTitle, { fontSize: 16 }]}>
               새롭게 구독할 플랜을 선택해주세요
             </Text>
           </View>
-          <View>
-
-          </View>
+          <View></View>
         </View>
       </Modal>
     </View>
   );
 };
+
+const ScreenOrderDate = () => {
+  // let now = new Date();
+  // let monthString = now.toLocaleString("en-US", { month: "short" });
+  // let date = now.getDate();
+  // console.log(this);
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const onDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+
+  return (
+    <View style={{ paddingHorizontal: ScreenWidth(30) }}>
+      <View
+        style={{
+          width: ScreenWidth(390),
+          height: ScreenHEIGHT(125),
+          justifyContent: "flex-end",
+          alignItems: "flex-start",
+          marginBottom: ScreenHEIGHT(50),
+        }}
+      >
+        <Text style={[styles.title, { fontSize: 22 }]}>배송 날짜 선택</Text>
+        <Text style={[styles.subTitle, { fontSize: 16 }]}>
+          꽃다발을 선물할 일자를 선택해주세요{"\n"}
+          최대 회를 선택할 수 있습니다
+        </Text>
+      </View>
+
+      <View>
+
+        <CalendarPicker
+          width={ScreenWidth(350)}
+          selectedDayColor= {COLOR_ORANGE}
+          firstDay={1}
+          onDateChange={onDateChange}
+          />
+
+          <View>
+              
+          </View>
+          <Text style={styles.textStyle}>
+            {selectedDate ? selectedDate.getDate() : ''}
+          </Text>
+      </View>
+    </View>
+  );
+}
+const ScreenOrderFlower = () => {
+
+  return (
+    <View>
+
+    </View>
+  );
+}
+const ScreenFlowerList = () => {
+
+  return (
+    <View>
+
+    </View>
+  );
+}
+const ScreenOrderCheck = () => {
+
+  return (
+    <View>
+
+    </View>
+  );
+}
+const ScreenOrderFinish = () => {
+
+  return (
+    <View>
+
+    </View>
+  );
+}
 
 export const NativeStack = createNativeStackNavigator();
 
@@ -382,6 +463,13 @@ const Stack = () => (
     <NativeStack.Screen name="order" component={ScreenOrder} />
     <NativeStack.Screen name="news" component={ScreenNews} />
     <NativeStack.Screen name="planList" component={ScreenPlanList} />
+  
+    {/* 꽃다발 구매 단계 화면 */}
+    <NativeStack.Screen name="orderDate" component={ScreenOrderDate} />
+    <NativeStack.Screen name="orderFlower" component={ScreenOrderFlower} />
+    <NativeStack.Screen name="flowerList" component={ScreenFlowerList} />
+    <NativeStack.Screen name="orderCheck" component={ScreenOrderCheck} />
+    <NativeStack.Screen name="orderFinish" component={ScreenOrderFinish} />
   </NativeStack.Navigator>
 );
 
