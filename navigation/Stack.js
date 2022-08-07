@@ -7,7 +7,12 @@ import {
   Image,
   PixelRatio,
   Platform,
+  FlatList,
+  Modal,
+  Pressable,
+  ScrollView,
 } from "react-native";
+
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
   COLOR_BG,
@@ -17,10 +22,9 @@ import {
   COLOR_ORANGE,
 } from "../colors";
 import { ScreenWidth, ScreenHEIGHT, ScreenFONT } from "../resposiveScreen";
-import Modal from "react-native-modal";
-import styled from "styled-components/native";
-import CalendarPicker from 'react-native-calendar-picker';
 
+import styled from "styled-components/native";
+import CalendarPicker from "react-native-calendar-picker";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 import moment from "moment";
 
@@ -57,15 +61,6 @@ const OrderPlanView = (props) => (
   </View>
 );
 
-const planListModal = styled.View`
-  flex-direction: column;
-  align-items: center;
-  /* 모달창 크기 조절 */
-  width: 320px;
-  height: 220px;
-  background-color: rgba(255, 255, 255, 1);
-  border-radius: 10px;
-`;
 const styles = StyleSheet.create({
   statusView: {
     backgroundColor: "white",
@@ -269,6 +264,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => (
 );
 
 const ScreenOrder = ({ navigation: { navigate } }) => {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
@@ -289,6 +285,7 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
       <View>
         <OrderPlanView planName={"연인플랜"} num={3} />
         <OrderPlanView planName={"가족플랜"} num={1} />
+
         <View
           style={[
             styles.shadow,
@@ -306,16 +303,39 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
             },
           ]}
         >
-          <TouchableOpacity onPress={() => navigate("planList")}>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
               구독 추가하기
             </Text>
           </TouchableOpacity>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styless.centeredView}>
+            <View style={styless.modalView}>
+              <Text style={styless.modalText}>Hello World!</Text>
+              {/* 구독 목록 리스트  */}
+              <ScreenPlanList />
+              <Pressable
+                style={[styless.button, styless.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styless.textStyle}>완료</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
-        <TouchableOpacity onPress={() => navigate("orderDate")}>
-          <Text>Next</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigate("orderDate")}>
+        <Text>Next</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -331,45 +351,18 @@ const ScreenNews = () => (
 );
 
 const PlanListButton = () => {
-  return <View style={{ height: ScreenHEIGHT(100), s }}></View>;
+  return <View style={{ height: ScreenHEIGHT(100) }}></View>;
 };
 const ScreenPlanList = () => {
   const [modalVisible, setModalVisible] = useState(true);
   return (
     <View>
-      <Modal
-        style={{
-          borderRadius: 10,
-          backgroundColor: "white",
-        }}
-        isVisible={modalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-        onSwipeComplete={() => setModalVisible(false)}
-        animationIn={"slideInUp"}
-        animationOut={"slideInDown"}
-      >
-        <View
-          style={{
-            paddingVertical: ScreenHEIGHT(20),
-            paddingHorizontal: ScreenWidth(20),
-          }}
-        >
-          <View>
-            <Text style={[styles.title, { fontSize: 22, marginBottom: 8 }]}>
-              구독 플랜 추가하기
-            </Text>
-            <Text style={[styles.subTitle, { fontSize: 16 }]}>
-              새롭게 구독할 플랜을 선택해주세요
-            </Text>
-          </View>
-          <View></View>
-        </View>
-      </Modal>
+      <Text>연인플랜</Text>
     </View>
   );
 };
 
-const ScreenOrderDate = () => {
+const ScreenOrderDate = ({ navigation: { navigate } }) => {
   // let now = new Date();
   // let monthString = now.toLocaleString("en-US", { month: "short" });
   // let date = now.getDate();
@@ -377,11 +370,137 @@ const ScreenOrderDate = () => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const onDateChange = (date) => {
+    console.log(date);
     setSelectedDate(date);
   };
 
-
   return (
+    <View style={{ paddingHorizontal: ScreenWidth(30) }}>
+    <View
+      style={{
+        width: ScreenWidth(390),
+        height: ScreenHEIGHT(125),
+        justifyContent: "flex-end",
+        alignItems: "flex-start",
+        marginBottom: ScreenHEIGHT(30),
+      }}
+    >
+        <Text style={[styles.title, { fontSize: 22 }]}>배송 날짜 선택</Text>
+        <Text style={[styles.subTitle, { fontSize: 16 }]}>
+          꽃다발을 선물할 일자를 선택해주세요{"\n"}
+          최대 회를 선택할 수 있습니다
+        </Text>
+      </View>
+
+      <View>
+        <CalendarPicker
+          width={ScreenWidth(350)}
+          selectedDayColor={COLOR_ORANGE}
+          firstDay={1}
+          onDateChange={onDateChange}
+        />
+
+        <View></View>
+        <Text style={styles.textStyle}>
+          {selectedDate ? selectedDate.toString() : ""}
+        </Text>
+      </View>
+      <View>
+        <TouchableOpacity onPress={() => navigate("orderFlower")}>
+          <Text>Next</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+const ScreenOrderFlower = ({ navigation: { navigate } }) => {
+  return (
+      <View style={{ paddingHorizontal: ScreenWidth(30) }}>
+        <View
+          style={{
+            width: ScreenWidth(390),
+            height: ScreenHEIGHT(125),
+            justifyContent: "flex-end",
+            alignItems: "flex-start",
+            marginBottom: ScreenHEIGHT(50),
+          }}
+        >
+          <Text style={[styles.title, { fontSize: 22 }]}>꽃다발 선택</Text>
+          <Text style={[styles.subTitle, { fontSize: 16 }]}>
+            선물할 꽃다발을 일자마다 선택해주세요
+          </Text>
+        </View>
+        {/* <TouchableOpacity onPress={() => navigate("orderCheck")}>
+        <Text>Next</Text></TouchableOpacity> */}
+        <Pressable onPress={() => navigate("orderCheck")}>
+          <Text>select FLOWER</Text>
+        </Pressable>
+      </View>
+  );
+};
+
+const styless = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    height: ScreenHEIGHT(640),
+    width: ScreenWidth(330),
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+});
+const ScreenFlowerList = ({ navigation }) => {
+  return (
+    <View>
+      <ScrollView>
+        <Text>국화</Text>
+        <Text>수국</Text>
+        <Text>튤립</Text>
+      </ScrollView>
+      <Pressable onPress={() => navigation.goBack()}>
+        <Text>완료</Text>
+      </Pressable>
+    </View>
+  );
+};
+const ScreenOrderCheck = ({ navigation: { navigate } }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  return (
+
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
         style={{
@@ -392,64 +511,69 @@ const ScreenOrderDate = () => {
           marginBottom: ScreenHEIGHT(50),
         }}
       >
-        <Text style={[styles.title, { fontSize: 22 }]}>배송 날짜 선택</Text>
+        <Text style={[styles.title, { fontSize: 22 }]}>주문 완료</Text>
         <Text style={[styles.subTitle, { fontSize: 16 }]}>
-          꽃다발을 선물할 일자를 선택해주세요{"\n"}
-          최대 회를 선택할 수 있습니다
+          주문 내역을 확인해주세요
         </Text>
+        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+        <Text>Next</Text>
+      </TouchableOpacity>
       </View>
-
-      <View>
-
-        <CalendarPicker
-          width={ScreenWidth(350)}
-          selectedDayColor= {COLOR_ORANGE}
-          firstDay={1}
-          onDateChange={onDateChange}
-          />
-
-          <View>
-              
+      <View style={styless.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styless.centeredView}>
+            <View style={
+              {
+                margin: 20,
+                width: ScreenWidth(300),
+                height: ScreenWidth(300),
+                backgroundColor: "white",
+                borderRadius: 20,
+                padding: 35,
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5
+              }
+            }>
+              <View></View>
+              <Text style={styles.title}>주문 완료!{"\n"}예쁜 꽃다발을 만들어드릴게요</Text>
+              <Image
+                style={{
+                  height: ScreenWidth(120),
+                  width: ScreenWidth(120),
+                  margin: ScreenHEIGHT(20),
+                }}
+                source={require("../image/rosebouquet.png")}
+              ></Image>
+              <Pressable
+                style={[styless.button, styless.buttonClose, {backgroundColor: COLOR_ORANGE}]}
+                // onPress={navigate("order")}
+              >
+                <Text style={styless.textStyle}>Complete</Text>
+              </Pressable>
+            </View>
           </View>
-          <Text style={styles.textStyle}>
-            {selectedDate ? selectedDate.getDate() : ''}
-          </Text>
+        </Modal>
       </View>
     </View>
+    
+
   );
-}
-const ScreenOrderFlower = () => {
-
-  return (
-    <View>
-
-    </View>
-  );
-}
-const ScreenFlowerList = () => {
-
-  return (
-    <View>
-
-    </View>
-  );
-}
-const ScreenOrderCheck = () => {
-
-  return (
-    <View>
-
-    </View>
-  );
-}
-const ScreenOrderFinish = () => {
-
-  return (
-    <View>
-
-    </View>
-  );
-}
+};
 
 export const NativeStack = createNativeStackNavigator();
 
@@ -463,13 +587,12 @@ const Stack = () => (
     <NativeStack.Screen name="order" component={ScreenOrder} />
     <NativeStack.Screen name="news" component={ScreenNews} />
     <NativeStack.Screen name="planList" component={ScreenPlanList} />
-  
+
     {/* 꽃다발 구매 단계 화면 */}
     <NativeStack.Screen name="orderDate" component={ScreenOrderDate} />
     <NativeStack.Screen name="orderFlower" component={ScreenOrderFlower} />
-    <NativeStack.Screen name="flowerList" component={ScreenFlowerList} />
+    <NativeStack.Screen name="orderFlowerList" component={ScreenFlowerList} />
     <NativeStack.Screen name="orderCheck" component={ScreenOrderCheck} />
-    <NativeStack.Screen name="orderFinish" component={ScreenOrderFinish} />
   </NativeStack.Navigator>
 );
 
