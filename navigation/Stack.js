@@ -11,6 +11,7 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  TextInput,
 } from "react-native";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -58,6 +59,75 @@ const OrderPlanView = (props) => (
     <TouchableOpacity style={{ width: 24, height: 14 }}>
       <Text>X</Text>
     </TouchableOpacity>
+  </View>
+);
+
+const OrderPlanList = () => (
+  <View
+    style={[
+      {
+        height: ScreenHEIGHT(120),
+        width: "100%",
+        borderColor: COLOR_LGREY,
+        borderRadius: 20,
+        borderWidth: 1.9,
+        flexDirection: "row",
+        paddingHorizontal: 10,
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 20,
+        
+      },
+    ]}
+  >
+    <View style={{flex: 3, backgroundColor: 'red'}}>
+
+    </View>
+
+    <View style={{flex: 1}}>
+
+    </View>
+    {/* <View style={{ alignItems: "flex-start" }}>
+      <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+        연인플랜
+      </Text>
+      <Text style={[styles.subTitle, { fontSize: 15 }]}>
+        연 6회 꽃다발 배송
+      </Text>
+    </View>
+    <View style={{
+      height: ScreenHEIGHT(120),
+      width: ScreenWidth(120),
+      backgroundColor: COLOR_ORANGE,
+      borderTopRightRadius: 20,
+      borderBottomRightRadius: 20,
+      flexDirection: "row",
+      paddingHorizontal: 10,
+      alignItems: "center",
+    }}>
+      <TouchableOpacity style={{ width: 24, height: 14 }}>
+        <Text>X</Text>
+      </TouchableOpacity>
+    </View>
+     */}
+  </View>
+);
+
+
+const NextBtn = (props) => (
+  <View
+    style={{
+      height: ScreenHEIGHT(50),
+      borderColor: COLOR_ORANGE,
+      borderRadius: 30,
+      paddingHorizontal: 30,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 25,
+      backgroundColor: COLOR_ORANGE,
+    }}
+  >
+    <Text style={[styles.title, { color: "white" }]}>{props.text}</Text>
   </View>
 );
 
@@ -202,9 +272,10 @@ const ScreenMain = ({ navigation: { navigate } }) => {
               style={[
                 styles.btn,
                 styles.shadow,
-                { backgroundColor: COLOR_ORANGE },
+                // {backgroundColor: onfocus ? COLOR_ORANGE : "white"}
               ]}
               onPress={() => navigate("order")}
+              // onFocus={onfocus}
             >
               {/* () => navigate("Tabs", { screen: "" }) */}
               <Text style={styles.title}>꽃다발{"\n"}주문하기</Text>
@@ -265,14 +336,15 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => (
 
 const ScreenOrder = ({ navigation: { navigate } }) => {
   const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
         style={{
-          width: ScreenWidth(390),
+          width: ScreenWidth(330),
           height: ScreenHEIGHT(125),
           justifyContent: "flex-end",
-          alignItems: "flex-start",
+          alignItems: "baseline",
           marginBottom: ScreenHEIGHT(30),
         }}
       >
@@ -281,34 +353,40 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
           주문을 진행할 플랜을 선택해주세요
         </Text>
       </View>
-
-      <View>
-        <OrderPlanView planName={"연인플랜"} num={3} />
-        <OrderPlanView planName={"가족플랜"} num={1} />
-
-        <View
-          style={[
-            styles.shadow,
-            {
-              height: ScreenHEIGHT(75.6),
-              backgroundColor: COLOR_LGREY,
-              borderColor: COLOR_LGREY,
-              borderRadius: 10,
-              // borderWidth: 1.8,
-              flexDirection: "row",
-              paddingHorizontal: 30,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 25,
-            },
-          ]}
-        >
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-              구독 추가하기
-            </Text>
+      <View style={{ height: "100%" }}>
+        <View style={{ flex: 1.5 }}>
+          <OrderPlanView planName={"연인플랜"} num={3} />
+          <OrderPlanView planName={"가족플랜"} num={1} />
+          <View
+            style={[
+              styles.shadow,
+              {
+                height: ScreenHEIGHT(75.6),
+                backgroundColor: COLOR_LGREY,
+                borderColor: COLOR_LGREY,
+                borderRadius: 10,
+                borderWidth: 1.8,
+                flexDirection: "row",
+                paddingHorizontal: 30,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 25,
+              },
+            ]}
+          >
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+                구독 추가하기
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={() => navigate("orderDate")}>
+            <NextBtn text={"Next"} />
           </TouchableOpacity>
         </View>
+
         <Modal
           animationType="slide"
           transparent={true}
@@ -318,10 +396,18 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
             setModalVisible(!modalVisible);
           }}
         >
-          <View style={styless.centeredView}>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: ScreenHEIGHT(44),
+            }}
+          >
             <View style={styless.modalView}>
-              <Text style={styless.modalText}>Hello World!</Text>
-              {/* 구독 목록 리스트  */}
+              <OrderPlanList/>
+              <OrderPlanList/>
+              <OrderPlanList/>
+              
               <ScreenPlanList />
               <Pressable
                 style={[styless.button, styless.buttonClose]}
@@ -333,9 +419,6 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
           </View>
         </Modal>
       </View>
-      <TouchableOpacity onPress={() => navigate("orderDate")}>
-        <Text>Next</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -363,95 +446,104 @@ const ScreenPlanList = () => {
 };
 
 const ScreenOrderDate = ({ navigation: { navigate } }) => {
-  // let now = new Date();
-  // let monthString = now.toLocaleString("en-US", { month: "short" });
-  // let date = now.getDate();
-  // console.log(this);
   const [selectedDate, setSelectedDate] = useState(null);
 
   const onDateChange = (date) => {
-    console.log(date);
     setSelectedDate(date);
   };
 
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
-    <View
-      style={{
-        width: ScreenWidth(390),
-        height: ScreenHEIGHT(125),
-        justifyContent: "flex-end",
-        alignItems: "flex-start",
-        marginBottom: ScreenHEIGHT(30),
-      }}
-    >
+      <View
+        style={{
+          width: ScreenWidth(330),
+          height: ScreenHEIGHT(125),
+          justifyContent: "flex-end",
+          alignItems: "baseline",
+          marginBottom: ScreenHEIGHT(30),
+        }}
+      >
         <Text style={[styles.title, { fontSize: 22 }]}>배송 날짜 선택</Text>
         <Text style={[styles.subTitle, { fontSize: 16 }]}>
-          꽃다발을 선물할 일자를 선택해주세요{"\n"}
-          최대 회를 선택할 수 있습니다
+          꽃다발을 선물할 일자를 선택해주세요
         </Text>
       </View>
 
-      <View>
-        <CalendarPicker
-          width={ScreenWidth(350)}
-          selectedDayColor={COLOR_ORANGE}
-          firstDay={1}
-          onDateChange={onDateChange}
-        />
+      <View style={{ height: "100%" }}>
+        <View style={{ flex: 1.5 }}>
+          <CalendarPicker
+            width={ScreenWidth(350)}
+            selectedDayColor={COLOR_ORANGE}
+            firstDay={1}
+            onDateChange={onDateChange}
+          />
 
-        <View></View>
-        <Text style={styles.textStyle}>
-          {selectedDate ? selectedDate.toString() : ""}
-        </Text>
-      </View>
-      <View>
-        <TouchableOpacity onPress={() => navigate("orderFlower")}>
-          <Text>Next</Text>
-        </TouchableOpacity>
+          <View></View>
+          <Text style={styles.textStyle}>
+            {selectedDate ? selectedDate.toString() : ""}
+          </Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={() => navigate("orderFlower")}>
+            <NextBtn text={"Next"} />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
 const ScreenOrderFlower = ({ navigation: { navigate } }) => {
   return (
-      <View style={{ paddingHorizontal: ScreenWidth(30) }}>
-        <View
-          style={{
-            width: ScreenWidth(390),
-            height: ScreenHEIGHT(125),
-            justifyContent: "flex-end",
-            alignItems: "flex-start",
-            marginBottom: ScreenHEIGHT(50),
-          }}
-        >
-          <Text style={[styles.title, { fontSize: 22 }]}>꽃다발 선택</Text>
-          <Text style={[styles.subTitle, { fontSize: 16 }]}>
-            선물할 꽃다발을 일자마다 선택해주세요
-          </Text>
-        </View>
-        {/* <TouchableOpacity onPress={() => navigate("orderCheck")}>
-        <Text>Next</Text></TouchableOpacity> */}
-        <Pressable onPress={() => navigate("orderCheck")}>
-          <Text>select FLOWER</Text>
-        </Pressable>
+    <View style={{ paddingHorizontal: ScreenWidth(30) }}>
+      <View
+        style={{
+          width: ScreenWidth(330),
+          height: ScreenHEIGHT(125),
+          justifyContent: "flex-end",
+          alignItems: "baseline",
+          marginBottom: ScreenHEIGHT(30),
+        }}
+      >
+        <Text style={[styles.title, { fontSize: 22 }]}>꽃다발 선택</Text>
+        <Text style={[styles.subTitle, { fontSize: 16 }]}>
+          선물할 꽃다발을 일자마다 선택해주세요
+        </Text>
       </View>
+
+      {/* <TouchableOpacity onPress={() => navigate("orderCheck")}>
+        <Text>Next</Text></TouchableOpacity> */}
+
+      <View style={{ height: "100%" }}>
+        <View style={{ flex: 1.5 }}>
+          <Pressable onPress={() => navigate("orderFlowerList")}>
+            <Text>select FLOWER</Text>
+          </Pressable>
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <Pressable onPress={() => navigate("orderCheck")}>
+            <NextBtn text={"Next"} />
+          </Pressable>
+        </View>
+      </View>
+    </View>
   );
 };
 
 const styless = StyleSheet.create({
   centeredView: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
+    marginTop: ScreenHEIGHT(44),
   },
   modalView: {
-    margin: 20,
     backgroundColor: "white",
-    borderRadius: 20,
-    height: ScreenHEIGHT(640),
-    width: ScreenWidth(330),
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: ScreenHEIGHT(800),
+    width: ScreenWidth(390),
+    paddingHorizontal: ScreenWidth(30),
+    paddingTop: ScreenHEIGHT(26),
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -484,8 +576,10 @@ const styless = StyleSheet.create({
   },
 });
 const ScreenFlowerList = ({ navigation }) => {
+  const [value, onChangeText] = useState("Useless Multiline Placeholder");
   return (
     <View>
+      <TextInput></TextInput>
       <ScrollView>
         <Text>국화</Text>
         <Text>수국</Text>
@@ -497,29 +591,46 @@ const ScreenFlowerList = ({ navigation }) => {
     </View>
   );
 };
+
 const ScreenOrderCheck = ({ navigation: { navigate } }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const onPress = () => {
+    navigate("main");
+  };
   return (
-
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
         style={{
-          width: ScreenWidth(390),
+          width: ScreenWidth(330),
           height: ScreenHEIGHT(125),
           justifyContent: "flex-end",
-          alignItems: "flex-start",
-          marginBottom: ScreenHEIGHT(50),
+          alignItems: "baseline",
+          marginBottom: ScreenHEIGHT(30),
         }}
       >
         <Text style={[styles.title, { fontSize: 22 }]}>주문 완료</Text>
         <Text style={[styles.subTitle, { fontSize: 16 }]}>
           주문 내역을 확인해주세요
         </Text>
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-        <Text>Next</Text>
-      </TouchableOpacity>
       </View>
-      <View style={styless.centeredView}>
+
+      <View style={{ height: "100%" }}>
+        <View style={{ flex: 1.5 }}>
+          <Text>Hello</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Pressable onPress={() => setModalVisible(true)}>
+            <NextBtn text={"Order"} />
+          </Pressable>
+        </View>
+      </View>
+
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Modal
           animationType="slide"
           transparent={true}
@@ -529,9 +640,16 @@ const ScreenOrderCheck = ({ navigation: { navigate } }) => {
             setModalVisible(!modalVisible);
           }}
         >
-          <View style={styless.centeredView}>
-            <View style={
-              {
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              paddingVertical: ScreenHEIGHT(272),
+              backgroundColor: modalVisible ? 'rgba(52, 52, 52, 0.7)' : "white"
+            }}
+          >
+            <View
+              style={{
                 margin: 20,
                 width: ScreenWidth(300),
                 height: ScreenWidth(300),
@@ -542,15 +660,16 @@ const ScreenOrderCheck = ({ navigation: { navigate } }) => {
                 shadowColor: "#000",
                 shadowOffset: {
                   width: 0,
-                  height: 2
+                  height: 2,
                 },
                 shadowOpacity: 0.25,
                 shadowRadius: 4,
-                elevation: 5
-              }
-            }>
-              <View></View>
-              <Text style={styles.title}>주문 완료!{"\n"}예쁜 꽃다발을 만들어드릴게요</Text>
+                elevation: 5,
+              }}
+            >
+              <Text style={styles.title}>
+                주문 완료!{"\n"}예쁜 꽃다발을 만들어드릴게요
+              </Text>
               <Image
                 style={{
                   height: ScreenWidth(120),
@@ -559,19 +678,22 @@ const ScreenOrderCheck = ({ navigation: { navigate } }) => {
                 }}
                 source={require("../image/rosebouquet.png")}
               ></Image>
-              <Pressable
-                style={[styless.button, styless.buttonClose, {backgroundColor: COLOR_ORANGE}]}
-                // onPress={navigate("order")}
+
+              <TouchableOpacity
+                style={[
+                  styless.button,
+                  styless.buttonClose,
+                  { backgroundColor: COLOR_ORANGE },
+                ]}
+                onPress={onPress}
               >
                 <Text style={styless.textStyle}>Complete</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
       </View>
     </View>
-    
-
   );
 };
 
