@@ -23,7 +23,7 @@ import {
   COLOR_ORANGE,
 } from "../colors";
 import { ScreenWidth, ScreenHEIGHT, ScreenFONT } from "../resposiveScreen";
-
+import OrderPlanList from "../screens/PlanList";
 import styled from "styled-components/native";
 import CalendarPicker from "react-native-calendar-picker";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
@@ -62,58 +62,6 @@ const OrderPlanView = (props) => (
   </View>
 );
 
-const OrderPlanList = () => (
-  <View
-    style={[
-      {
-        height: ScreenHEIGHT(120),
-        width: "100%",
-        borderColor: COLOR_LGREY,
-        borderRadius: 20,
-        borderWidth: 1.9,
-        flexDirection: "row",
-        paddingHorizontal: 10,
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 20,
-        
-      },
-    ]}
-  >
-    <View style={{flex: 3, backgroundColor: 'red'}}>
-
-    </View>
-
-    <View style={{flex: 1}}>
-
-    </View>
-    {/* <View style={{ alignItems: "flex-start" }}>
-      <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-        연인플랜
-      </Text>
-      <Text style={[styles.subTitle, { fontSize: 15 }]}>
-        연 6회 꽃다발 배송
-      </Text>
-    </View>
-    <View style={{
-      height: ScreenHEIGHT(120),
-      width: ScreenWidth(120),
-      backgroundColor: COLOR_ORANGE,
-      borderTopRightRadius: 20,
-      borderBottomRightRadius: 20,
-      flexDirection: "row",
-      paddingHorizontal: 10,
-      alignItems: "center",
-    }}>
-      <TouchableOpacity style={{ width: 24, height: 14 }}>
-        <Text>X</Text>
-      </TouchableOpacity>
-    </View>
-     */}
-  </View>
-);
-
-
 const NextBtn = (props) => (
   <View
     style={{
@@ -124,7 +72,7 @@ const NextBtn = (props) => (
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 25,
-      backgroundColor: COLOR_ORANGE,
+      backgroundColor: COLOR_ORANGE
     }}
   >
     <Text style={[styles.title, { color: "white" }]}>{props.text}</Text>
@@ -404,13 +352,16 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
             }}
           >
             <View style={styless.modalView}>
-              <OrderPlanList/>
-              <OrderPlanList/>
-              <OrderPlanList/>
-              
-              <ScreenPlanList />
+              <OrderPlanList />
+              <OrderPlanList />
+              <OrderPlanList />
+
               <Pressable
-                style={[styless.button, styless.buttonClose]}
+                style={[
+                  styless.button,
+                  styless.buttonClose,
+                  { backgroundColor: COLOR_ORANGE, width: ScreenWidth(80) },
+                ]}
                 onPress={() => setModalVisible(!modalVisible)}
               >
                 <Text style={styless.textStyle}>완료</Text>
@@ -447,10 +398,15 @@ const ScreenPlanList = () => {
 
 const ScreenOrderDate = ({ navigation: { navigate } }) => {
   const [selectedDate, setSelectedDate] = useState(null);
-
   const onDateChange = (date) => {
-    setSelectedDate(date);
+    const month = Object.entries(date)[1][1]["month"] + 1;
+    const day = Object.entries(date)[1][1]["day"];
+    setSelectedDate([month, day]);
   };
+
+  // const getEntries = Object.entries().map((entrie, idx) => {
+  //   return console.log(entrie, idx);
+  // });
 
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
@@ -478,10 +434,37 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
             onDateChange={onDateChange}
           />
 
-          <View></View>
-          <Text style={styles.textStyle}>
-            {selectedDate ? selectedDate.toString() : ""}
-          </Text>
+          {selectedDate ? (
+            <View 
+            style={{marginTop: ScreenHEIGHT(20)}}>
+              <View
+                style={{
+                  backgroundColor: COLOR_LGREY,
+                  width: ScreenWidth(140),
+                  height: ScreenHEIGHT(42),
+                  borderColor: COLOR_ORANGE,
+                  borderRadius: 10,
+                  paddingHorizontal: 30,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 25,
+                  flexDirection: "row"
+                }}
+              >
+                <Text style={[styles.subTitle, {color: "black"}]}>
+                  {selectedDate[0].toString() +
+                    "월" +
+                    " " +
+                    selectedDate[1].toString() +
+                    "일"}
+                </Text>
+
+                <TouchableOpacity>
+                <Text>X</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : null}
         </View>
         <View style={{ flex: 1 }}>
           <TouchableOpacity onPress={() => navigate("orderFlower")}>
@@ -645,7 +628,7 @@ const ScreenOrderCheck = ({ navigation: { navigate } }) => {
               justifyContent: "center",
               alignItems: "center",
               paddingVertical: ScreenHEIGHT(272),
-              backgroundColor: modalVisible ? 'rgba(52, 52, 52, 0.7)' : "white"
+              backgroundColor: modalVisible ? "rgba(52, 52, 52, 0.7)" : "white",
             }}
           >
             <View
