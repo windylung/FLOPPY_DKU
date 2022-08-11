@@ -72,7 +72,7 @@ const NextBtn = (props) => (
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 25,
-      backgroundColor: COLOR_ORANGE
+      backgroundColor: COLOR_ORANGE,
     }}
   >
     <Text style={[styles.title, { color: "white" }]}>{props.text}</Text>
@@ -397,16 +397,50 @@ const ScreenPlanList = () => {
 };
 
 const ScreenOrderDate = ({ navigation: { navigate } }) => {
+  
   const [selectedDate, setSelectedDate] = useState(null);
+  const [orderData, setOrderData] =  useState({
+    date : [],
+    flower: 'tulip',
+  })
+  var orderDatas = new Array();
+
   const onDateChange = (date) => {
     const month = Object.entries(date)[1][1]["month"] + 1;
     const day = Object.entries(date)[1][1]["day"];
     setSelectedDate([month, day]);
+    setOrderData(selectedDate);
+    console.log(orderData);
+  };
+  
+  const addOrderData = (newOrderData) => {
+    setOrderData([newOrderData], '');
+    orderDatas.concat(orderData);
   };
 
-  // const getEntries = Object.entries().map((entrie, idx) => {
-  //   return console.log(entrie, idx);
-  // });
+  const onRemove = (key) => {
+
+    // console.log(key["order"]);
+    // console.log("-------------")
+    // console.log(orderData);
+    setOrderData(orderData.filter((order) => {
+      // console.log(order);
+      // console.log("----");
+      order !== key}));
+    // console.log(orderData);
+  }
+  // var OrderList = new Array();
+
+  // function Order(date, flower) {
+  //   this.date = date;
+  //   this.flower = flower;
+
+  // };
+
+  // function Order.protype.setValue(newDate, newFlower) {
+  //   this.date = newDate;
+  //   this.flower = newFlower;
+  // };
 
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
@@ -435,35 +469,34 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
           />
 
           {selectedDate ? (
-            <View 
-            style={{marginTop: ScreenHEIGHT(20)}}>
-              <View
-                style={{
-                  backgroundColor: COLOR_LGREY,
-                  width: ScreenWidth(140),
-                  height: ScreenHEIGHT(42),
-                  borderColor: COLOR_ORANGE,
-                  borderRadius: 10,
-                  paddingHorizontal: 30,
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 25,
-                  flexDirection: "row"
-                }}
-              >
-                <Text style={[styles.subTitle, {color: "black"}]}>
-                  {selectedDate[0].toString() +
-                    "월" +
-                    " " +
-                    selectedDate[1].toString() +
-                    "일"}
-                </Text>
-
-                <TouchableOpacity>
-                <Text>X</Text>
-                </TouchableOpacity>
+            <View style={{ marginTop: ScreenHEIGHT(20) }}>
+                
+                {orderDatas.map((order) => (
+                  <View style={{
+                    backgroundColor: COLOR_LGREY,
+                    width: ScreenWidth(140),
+                    height: ScreenHEIGHT(42),
+                    borderColor: COLOR_ORANGE,
+                    borderRadius: 10,
+                    paddingHorizontal: 30,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 15,
+                    flexDirection: "row",
+                  }}>
+                    <Text
+                      style={[styles.subTitle, { color: "black" }]}
+                      key={order}
+                    >
+                      {order.date[0]}
+                      {/* {order.date + "월 " + order[1] + "일"} */}
+                    </Text>
+                    <TouchableOpacity onPress={() => onRemove({order})}>
+                      <Text>X</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
               </View>
-            </View>
           ) : null}
         </View>
         <View style={{ flex: 1 }}>
