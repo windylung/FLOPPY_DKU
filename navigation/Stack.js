@@ -13,6 +13,7 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
+import uuid from "react-native-uuid";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
@@ -28,7 +29,6 @@ import styled from "styled-components/native";
 import CalendarPicker from "react-native-calendar-picker";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 import moment from "moment";
-import { id } from "date-fns/locale";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -190,7 +190,7 @@ const ScreenMain = ({ navigation: { navigate } }) => {
             <View style={{ flex: 91 }}>
               <Image
                 style={{ height: ScreenHEIGHT(91), width: ScreenWidth(91) }}
-                source={require("../rose.png")}
+                source={require("../image/rose.png")}
               />
             </View>
             <View style={{ flex: 25 }}></View>
@@ -405,17 +405,17 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
     setOrders([
       ...orders,
       {
-        id: Math.random().toString(),
+        id: uuid.v4(),
         dateMonth: month,
         dateDay: day,
-        flower: "tulip",
+        flower: null,
       },
     ]);
   };
 
-  const onRemove = id => {
-    setOrders(orders.filter(todo => todo.id !== id));
-  }
+  const onRemove = (id) => {
+    setOrders(orders.filter((todo) => todo.id !== id));
+  };
 
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
@@ -444,40 +444,46 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
           />
 
           {/* <ScrollView> */}
-            {orders ? (
-              <View style={{ marginTop: ScreenHEIGHT(20),flexDirection: 'row', flexWrap: 'wrap'}}>
-                {orders.map((order) => (
-                  <View
-                    style={{
-                      backgroundColor: COLOR_LGREY,
-                      width: ScreenWidth(140),
-                      height: ScreenHEIGHT(42),
-                      borderColor: COLOR_ORANGE,
-                      borderRadius: 10,
-                      paddingHorizontal: 30,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: 15,
-                      flexDirection: "row",
-                      marginHorizontal: ScreenWidth(11),
-                    }}
+          {orders ? (
+            <View
+              style={{
+                marginTop: ScreenHEIGHT(20),
+                flexDirection: "row",
+                flexWrap: "wrap",
+              }}
+            >
+              {orders.map((order) => (
+                <View
+                  style={{
+                    backgroundColor: COLOR_LGREY,
+                    width: ScreenWidth(140),
+                    height: ScreenHEIGHT(42),
+                    borderColor: COLOR_ORANGE,
+                    borderRadius: 10,
+                    paddingHorizontal: 30,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 15,
+                    flexDirection: "row",
+                    marginHorizontal: ScreenWidth(11),
+                  }}
+                >
+                  <Text
+                    style={[styles.subTitle, { color: "black" }]}
+                    key={order.key}
                   >
-                    <Text
-                      style={[styles.subTitle, { color: "black" }]}
-                      key={order.key}
-                    >
-                      {order.dateMonth + "월 " + order.dateDay + "일"}
-                    </Text>
-                    <TouchableOpacity onPress={() => onRemove(order.id)}>
-                      <Text>X</Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-            ) : null}
+                    {order.dateMonth + "월 " + order.dateDay + "일"}
+                  </Text>
+                  <TouchableOpacity onPress={() => onRemove(order.id)}>
+                    <Text>X</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity onPress={() => navigate("orderFlower", {orders})}>
+          <TouchableOpacity onPress={() => navigate("orderFlower", { orders })}>
             <NextBtn text={"Next"} />
           </TouchableOpacity>
         </View>
@@ -485,9 +491,9 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
     </View>
   );
 };
-const ScreenOrderFlower = ({ navigation: { navigate } , route}) => {
-  const orders = route;
-  
+const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
+  const orders = route.params.orders;
+
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
@@ -501,42 +507,64 @@ const ScreenOrderFlower = ({ navigation: { navigate } , route}) => {
       >
         <Text style={[styles.title, { fontSize: 22 }]}>꽃다발 선택</Text>
         <Text style={[styles.subTitle, { fontSize: 16 }]}>
-          선물할 꽃다발을 일자마다 선택해주세요
+          선물할 꽃다발을 선택해주세요
         </Text>
       </View>
 
-      <View
-    style={[
-      {
-        height: ScreenHEIGHT(75.6),
-        borderColor: COLOR_ORANGE,
-        borderRadius: 10,
-        borderWidth: 1.9,
-        flexDirection: "row",
-        paddingHorizontal: 30,
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 25,
-      },
-    ]}
-  >
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
-      <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-        1회차
-      </Text>
-      <Text style={[styles.subTitle, { fontSize: 15 }]}>
-        꽃을 선택해주세요
-      </Text>
-    </View>
-    <TouchableOpacity style={{ width: 24, height: 14 }}>
-      <Text>X</Text>
-    </TouchableOpacity>
-  </View>
       <View style={{ height: "100%" }}>
         <View style={{ flex: 1.5 }}>
-          <Pressable onPress={() => navigate("orderFlowerList")}>
-            <Text>select FLOWER</Text>
-          </Pressable>
+          <View>
+            {orders.map((order) => (
+              <View
+                style={[
+                  {
+                    height: ScreenHEIGHT(82),
+                    borderColor: COLOR_ORANGE,
+                    borderRadius: 10,
+                    borderWidth: 1.9,
+                    flexDirection: "row",
+                    paddingHorizontal: 30,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 25,
+                  },
+                ]}
+              >
+                <View>
+                  <Text style={[styles.title, { fontSize: 14 }]}>
+                    {order.dateMonth}월 {order.dateDay}일
+                  </Text>
+                  <Text style={[styles.title, { fontSize: 17 }]}>
+                    {order.flower === null ? (
+                      <Text>꽃다발을 선택해주세요</Text>
+                    ) : (
+                      { flower }
+                    )}
+                  </Text>
+                </View>
+
+                <TouchableOpacity onPress={() => navigate("orderFlowerList")}>
+                  {order.flower === null ? (
+                    <Image
+                      style={{
+                        height: ScreenHEIGHT(60),
+                        width: ScreenWidth(60),
+                      }}
+                      source={require("../image/rosebouquet_Black.png")}
+                    ></Image>
+                  ) : (
+                    <Image
+                      style={{
+                        height: ScreenHEIGHT(55),
+                        width: ScreenWidth(55),
+                      }}
+                      source={require("../image/rosebouquet.png")}
+                    ></Image>
+                  )}
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
         </View>
 
         <View style={{ flex: 1 }}>
@@ -596,14 +624,77 @@ const styless = StyleSheet.create({
 });
 const ScreenFlowerList = ({ navigation }) => {
   const [value, onChangeText] = useState("Useless Multiline Placeholder");
+  const FlowerButton = () => {
+    return (
+      <View
+        style={{
+          width: ScreenWidth(170),
+          height: ScreenHEIGHT(200),
+          borderRadius: 7,
+          marginHorizontal: ScreenWidth(5),
+          marginBottom: ScreenHEIGHT(15),
+          alignItems: 'center',
+          
+          backgroundColor: "white",
+          padding: ScreenWidth(10)
+        }}
+      >
+        <Image
+          style={{ width: ScreenWidth(150), height: ScreenHEIGHT(100), marginBottom: 5 }}
+          source={require("../image/flower1.png")}
+        ></Image>
+        <View>
+          <Text style={styles.title}>노을</Text>
+          <Text style={[styles.subTitle, { fontSize: 13 }]}>
+            저녁의 노을을 담아냈습니다{"\n"}주황 소재 계절꽃
+          </Text>
+        </View>
+      </View>
+    );
+  };
   return (
-    <View>
-      <TextInput></TextInput>
-      <ScrollView>
-        <Text>국화</Text>
-        <Text>수국</Text>
-        <Text>튤립</Text>
-      </ScrollView>
+    <View
+      style={{ paddingHorizontal: ScreenWidth(15), backgroundColor: COLOR_BG }}
+    >
+      <View style={{ marginTop: 70 }}>
+        <ScrollView>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              paddingBottom: ScreenHEIGHT(200),
+              justifyContent: "center",
+            }}
+          >
+            <FlowerButton
+              {...(<Image source={require("../image/flower1.png")}></Image>)}
+            />
+            <FlowerButton />
+            <FlowerButton />
+            <FlowerButton />
+            <FlowerButton />
+            <FlowerButton />
+            <FlowerButton />
+            <FlowerButton />
+            <FlowerButton />
+          </View>
+        </ScrollView>
+      </View>
+      {/* <View
+        style={{
+          width: ScreenWidth(330),
+          height: ScreenHEIGHT(125),
+          justifyContent: "flex-end",
+          alignItems: "baseline",
+          marginBottom: ScreenHEIGHT(30),
+        }}
+      >
+        <Text style={[styles.title, { fontSize: 22 }]}>꽃다발 선택</Text>
+        <Text style={[styles.subTitle, { fontSize: 16 }]}>
+          선물할 꽃다발을 선택해주세요
+        </Text>
+      </View> */}
+
       <Pressable onPress={() => navigation.goBack()}>
         <Text>완료</Text>
       </Pressable>
@@ -736,3 +827,5 @@ const Stack = () => (
     <NativeStack.Screen name="orderCheck" component={ScreenOrderCheck} />
   </NativeStack.Navigator>
 );
+
+export default Stack;
