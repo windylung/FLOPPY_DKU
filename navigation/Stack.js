@@ -28,6 +28,7 @@ import styled from "styled-components/native";
 import CalendarPicker from "react-native-calendar-picker";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 import moment from "moment";
+import { id } from "date-fns/locale";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -397,50 +398,24 @@ const ScreenPlanList = () => {
 };
 
 const ScreenOrderDate = ({ navigation: { navigate } }) => {
-  
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [orderData, setOrderData] =  useState({
-    date : [],
-    flower: 'tulip',
-  })
-  var orderDatas = new Array();
-
-  const onDateChange = (date) => {
+  const [orders, setOrders] = useState([]);
+  const addOrder = (date) => {
     const month = Object.entries(date)[1][1]["month"] + 1;
     const day = Object.entries(date)[1][1]["day"];
-    setSelectedDate([month, day]);
-    setOrderData(selectedDate);
-    console.log(orderData);
-  };
-  
-  const addOrderData = (newOrderData) => {
-    setOrderData([newOrderData], '');
-    orderDatas.concat(orderData);
+    setOrders([
+      ...orders,
+      {
+        id: Math.random().toString(),
+        dateMonth: month,
+        dateDay: day,
+        flower: "tulip",
+      },
+    ]);
   };
 
-  const onRemove = (key) => {
-
-    // console.log(key["order"]);
-    // console.log("-------------")
-    // console.log(orderData);
-    setOrderData(orderData.filter((order) => {
-      // console.log(order);
-      // console.log("----");
-      order !== key}));
-    // console.log(orderData);
+  const onRemove = id => {
+    setOrders(orders.filter(todo => todo.id !== id));
   }
-  // var OrderList = new Array();
-
-  // function Order(date, flower) {
-  //   this.date = date;
-  //   this.flower = flower;
-
-  // };
-
-  // function Order.protype.setValue(newDate, newFlower) {
-  //   this.date = newDate;
-  //   this.flower = newFlower;
-  // };
 
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
@@ -465,42 +440,44 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
             width={ScreenWidth(350)}
             selectedDayColor={COLOR_ORANGE}
             firstDay={1}
-            onDateChange={onDateChange}
+            onDateChange={addOrder}
           />
 
-          {selectedDate ? (
-            <View style={{ marginTop: ScreenHEIGHT(20) }}>
-                
-                {orderDatas.map((order) => (
-                  <View style={{
-                    backgroundColor: COLOR_LGREY,
-                    width: ScreenWidth(140),
-                    height: ScreenHEIGHT(42),
-                    borderColor: COLOR_ORANGE,
-                    borderRadius: 10,
-                    paddingHorizontal: 30,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 15,
-                    flexDirection: "row",
-                  }}>
+          {/* <ScrollView> */}
+            {orders ? (
+              <View style={{ marginTop: ScreenHEIGHT(20),flexDirection: 'row', flexWrap: 'wrap'}}>
+                {orders.map((order) => (
+                  <View
+                    style={{
+                      backgroundColor: COLOR_LGREY,
+                      width: ScreenWidth(140),
+                      height: ScreenHEIGHT(42),
+                      borderColor: COLOR_ORANGE,
+                      borderRadius: 10,
+                      paddingHorizontal: 30,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: 15,
+                      flexDirection: "row",
+                      marginHorizontal: ScreenWidth(11),
+                    }}
+                  >
                     <Text
                       style={[styles.subTitle, { color: "black" }]}
-                      key={order}
+                      key={order.key}
                     >
-                      {order.date[0]}
-                      {/* {order.date + "월 " + order[1] + "일"} */}
+                      {order.dateMonth + "월 " + order.dateDay + "일"}
                     </Text>
-                    <TouchableOpacity onPress={() => onRemove({order})}>
+                    <TouchableOpacity onPress={() => onRemove(order.id)}>
                       <Text>X</Text>
                     </TouchableOpacity>
                   </View>
                 ))}
               </View>
-          ) : null}
+            ) : null}
         </View>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity onPress={() => navigate("orderFlower")}>
+          <TouchableOpacity onPress={() => navigate("orderFlower", {orders})}>
             <NextBtn text={"Next"} />
           </TouchableOpacity>
         </View>
@@ -508,7 +485,9 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
     </View>
   );
 };
-const ScreenOrderFlower = ({ navigation: { navigate } }) => {
+const ScreenOrderFlower = ({ navigation: { navigate } , route}) => {
+  const orders = route;
+  
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
@@ -526,9 +505,33 @@ const ScreenOrderFlower = ({ navigation: { navigate } }) => {
         </Text>
       </View>
 
-      {/* <TouchableOpacity onPress={() => navigate("orderCheck")}>
-        <Text>Next</Text></TouchableOpacity> */}
-
+      <View
+    style={[
+      {
+        height: ScreenHEIGHT(75.6),
+        borderColor: COLOR_ORANGE,
+        borderRadius: 10,
+        borderWidth: 1.9,
+        flexDirection: "row",
+        paddingHorizontal: 30,
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 25,
+      },
+    ]}
+  >
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+        1회차
+      </Text>
+      <Text style={[styles.subTitle, { fontSize: 15 }]}>
+        꽃을 선택해주세요
+      </Text>
+    </View>
+    <TouchableOpacity style={{ width: 24, height: 14 }}>
+      <Text>X</Text>
+    </TouchableOpacity>
+  </View>
       <View style={{ height: "100%" }}>
         <View style={{ flex: 1.5 }}>
           <Pressable onPress={() => navigate("orderFlowerList")}>
@@ -733,5 +736,3 @@ const Stack = () => (
     <NativeStack.Screen name="orderCheck" component={ScreenOrderCheck} />
   </NativeStack.Navigator>
 );
-
-export default Stack;
