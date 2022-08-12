@@ -24,13 +24,14 @@ import {
   COLOR_ORANGE,
 } from "../colors";
 import { ScreenWidth, ScreenHEIGHT, ScreenFONT } from "../resposiveScreen";
-import OrderPlanList from "../screens/PlanList";
+
 import styled from "styled-components/native";
 import CalendarPicker from "react-native-calendar-picker";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 import moment from "moment";
 import flowerLists from "../flowerList/flowerList";
 import { useIsFocused } from "@react-navigation/native";
+import planLists from "../planList/planList";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -56,7 +57,7 @@ const OrderPlanView = (props) => (
         {props.planName}
       </Text>
       <Text style={[styles.subTitle, { fontSize: 15 }]}>
-        {props.num}회차 진행중
+        {props.useTimes}회차 진행중
       </Text>
     </View>
     <TouchableOpacity style={{ width: 24, height: 14 }}>
@@ -286,7 +287,102 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => (
 );
 
 const ScreenOrder = ({ navigation: { navigate } }) => {
+  const [orders, setOrders] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const plans = planLists;
+  
+  const addOrder = (plan) => {
+    setOrders([
+      ...orders,
+      {
+        planName :  plan.name,
+        planTimes : plan.times,
+        orderDetail : []
+      },
+    ]);
+  };
+
+  const PlanListStyle = StyleSheet.create({
+    title: {
+      fontSize: ScreenFONT(15),
+      fontWeight: "600",
+      color: "white",
+      marginBottom: ScreenHEIGHT(6),
+    },
+    subTitle: {
+      fontSize: ScreenFONT(13),
+      fontWeight: "500",
+      color: COLOR_GREY,
+    },
+    mainTitle: {
+      // fontFamily:
+      fontSize: ScreenFONT(18),
+      fontWeight: "600",
+      color: "black",
+      marginBottom: ScreenHEIGHT(6),
+    },
+  });
+
+  const OrderPlanList = (props) => (
+    //
+    <View
+      style={{
+        height: ScreenHEIGHT(120),
+        width: "100%",
+        borderColor: COLOR_LGREY,
+        borderRadius: 20,
+        marginBottom: 20,
+        flexDirection: "row",
+        ...Platform.select({
+          ios: {
+            shadowColor: "black",
+            shadowOpacity: 0.2,
+            shadowOffset: {
+              height: 3,
+              width: 0,
+            },
+            shadowRadius: 8,
+          },
+          android: {
+            elevation: 5,
+          },
+        }),
+      }}
+    >
+      <View
+        style={{
+          flex: 1.8,
+          borderBottomLeftRadius: 20,
+          borderTopLeftRadius: 20,
+          borderWidth: 1.9,
+          borderColor: COLOR_LGREY,
+          paddingVertical: "10%",
+          paddingLeft: "5%",
+        }}
+      >
+        <Text style={[PlanListStyle.mainTitle]}>{props.name}</Text>
+        <Text style={[PlanListStyle.subTitle, { color: "black" }]}>
+          연 {props.times}회 꽃다발 선물
+        </Text>
+      </View>
+
+      <TouchableOpacity
+        onPress={() => addOrder(props)}
+        style={{
+          backgroundColor: COLOR_ORANGE,
+          borderTopRightRadius: 20,
+          borderBottomRightRadius: 20,
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={PlanListStyle.title}>{props.price}원</Text>
+
+        <Text style={PlanListStyle.title}>구독하기</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
@@ -306,8 +402,13 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
       </View>
       <View style={{ height: "100%" }}>
         <View style={{ flex: 1.5 }}>
-          <OrderPlanView planName={"연인플랜"} num={3} />
-          <OrderPlanView planName={"가족플랜"} num={1} />
+          {orders.map((order) => (
+            <OrderPlanView
+              planName={order.planName}
+              times={order.planTimes}
+              useTimes = {order.orderDetail.length}
+            />
+          ))}
           <View
             style={[
               styles.shadow,
@@ -355,9 +456,13 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
             }}
           >
             <View style={styless.modalView}>
-              <OrderPlanList />
-              <OrderPlanList />
-              <OrderPlanList />
+              {plans.map((plan) => (
+                <OrderPlanList
+                  name={plan.name}
+                  times={plan.times}
+                  price={plan.price}
+                />
+              ))}
 
               <Pressable
                 style={[
@@ -367,7 +472,14 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
                 ]}
                 onPress={() => setModalVisible(!modalVisible)}
               >
-                <Text style={styless.textStyle}>완료</Text>
+                <Text
+                  style={[
+                    styles.subtitle,
+                    { color: "white", textAlign: "center", fontWeight: "800" },
+                  ]}
+                >
+                  완료
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -742,8 +854,21 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
       </View>
 
       <View style={{ height: "100%" }}>
-        <View style={{ flex: 1.5 , backgroundColor: COLOR_LGREY, padding: ScreenWidth(20), borderRadius: 20}}>
-          <View style={{ flexDirection: "row", alignItems: "center",marginBottom: ScreenHEIGHT(10)}}>
+        <View
+          style={{
+            flex: 1.5,
+            backgroundColor: COLOR_LGREY,
+            padding: ScreenWidth(20),
+            borderRadius: 20,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: ScreenHEIGHT(10),
+            }}
+          >
             <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
               연인플랜
             </Text>
@@ -764,7 +889,7 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
                   alignItems: "center",
                   justifyContent: "space-between",
                   marginBottom: 10,
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 },
               ]}
             >
@@ -796,7 +921,6 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
               </View>
             </View>
           ))}
-      
         </View>
         <View style={{ flex: 1 }}>
           <Pressable onPress={() => setModalVisible(true)}>
