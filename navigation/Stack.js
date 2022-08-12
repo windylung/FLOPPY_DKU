@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -29,6 +29,8 @@ import styled from "styled-components/native";
 import CalendarPicker from "react-native-calendar-picker";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 import moment from "moment";
+import flowerLists from "../flowerList/flowerList";
+import { useIsFocused } from "@react-navigation/native";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -408,7 +410,7 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
         id: uuid.v4(),
         dateMonth: month,
         dateDay: day,
-        flower: null,
+        flower: "",
       },
     ]);
   };
@@ -492,8 +494,14 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
   );
 };
 const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
+  const isFoucused = useIsFocused();
+  useEffect(() => {
+    const orders = route.params.orders;
+  }, [isFoucused]);
   const orders = route.params.orders;
-
+  const onPressBouquet = (order) => {
+    navigate("orderFlowerList", [order]);
+  };
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
@@ -534,17 +542,34 @@ const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
                   <Text style={[styles.title, { fontSize: 14 }]}>
                     {order.dateMonth}월 {order.dateDay}일
                   </Text>
-                  <Text style={[styles.title, { fontSize: 17 }]}>
-                    {order.flower === null ? (
-                      <Text>꽃다발을 선택해주세요</Text>
-                    ) : (
-                      { flower }
-                    )}
-                  </Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={[
+                        styles.title,
+                        {
+                          fontSize: 17,
+                          marginRight: ScreenWidth(5),
+                          alignItems: "flex-end",
+                        },
+                      ]}
+                    >
+                      {order.flower === "" ? (
+                        <Text>꽃다발을 선택해주세요</Text>
+                      ) : (
+                        order.flower[0]
+                      )}
+                    </Text>
+                    <Text style={[styles.subTitle, { alignSelf: "center" }]}>
+                      {order.flower === "" ? "" : order.flower[1]}
+                    </Text>
+                  </View>
                 </View>
 
-                <TouchableOpacity onPress={() => navigate("orderFlowerList")}>
-                  {order.flower === null ? (
+                <TouchableOpacity
+                  // onPress={() => navigate("orderFlowerList", {order})}
+                  onPress={() => onPressBouquet(order)}
+                >
+                  {order.flower === "" ? (
                     <Image
                       style={{
                         height: ScreenHEIGHT(60),
@@ -568,7 +593,7 @@ const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
         </View>
 
         <View style={{ flex: 1 }}>
-          <Pressable onPress={() => navigate("orderCheck")}>
+          <Pressable onPress={() => navigate("orderCheck", { orders })}>
             <NextBtn text={"Next"} />
           </Pressable>
         </View>
@@ -622,36 +647,18 @@ const styless = StyleSheet.create({
     textAlign: "center",
   },
 });
-const ScreenFlowerList = ({ navigation }) => {
-  const [value, onChangeText] = useState("Useless Multiline Placeholder");
-  const FlowerButton = () => {
-    return (
-      <View
-        style={{
-          width: ScreenWidth(170),
-          height: ScreenHEIGHT(200),
-          borderRadius: 7,
-          marginHorizontal: ScreenWidth(5),
-          marginBottom: ScreenHEIGHT(15),
-          alignItems: 'center',
-          
-          backgroundColor: "white",
-          padding: ScreenWidth(10)
-        }}
-      >
-        <Image
-          style={{ width: ScreenWidth(150), height: ScreenHEIGHT(100), marginBottom: 5 }}
-          source={require("../image/flower1.png")}
-        ></Image>
-        <View>
-          <Text style={styles.title}>노을</Text>
-          <Text style={[styles.subTitle, { fontSize: 13 }]}>
-            저녁의 노을을 담아냈습니다{"\n"}주황 소재 계절꽃
-          </Text>
-        </View>
-      </View>
-    );
-  };
+const ScreenFlowerList = ({ navigation: { goBack }, route }) => {
+  const [flowerBouquet, setFLowerBouquet] = useState();
+
+  const order = route.params[0];
+  console.log(order);
+  const flowers = flowerLists;
+  function selectedFlower(flowerBouquet) {
+    order.flower = flowerBouquet;
+    console.log(order);
+    goBack();
+  }
+
   return (
     <View
       style={{ paddingHorizontal: ScreenWidth(15), backgroundColor: COLOR_BG }}
@@ -663,50 +670,60 @@ const ScreenFlowerList = ({ navigation }) => {
               flexDirection: "row",
               flexWrap: "wrap",
               paddingBottom: ScreenHEIGHT(200),
-              justifyContent: "center",
             }}
           >
-            <FlowerButton
-              {...(<Image source={require("../image/flower1.png")}></Image>)}
-            />
-            <FlowerButton />
-            <FlowerButton />
-            <FlowerButton />
-            <FlowerButton />
-            <FlowerButton />
-            <FlowerButton />
-            <FlowerButton />
-            <FlowerButton />
+            {flowerLists.map((flower) => (
+              <TouchableOpacity
+                style={{
+                  width: ScreenWidth(170),
+                  height: ScreenHEIGHT(200),
+                  borderRadius: 7,
+                  marginHorizontal: ScreenWidth(5),
+                  marginBottom: ScreenHEIGHT(15),
+                  backgroundColor: "white",
+                  padding: ScreenWidth(10),
+                }}
+                onPress={() => selectedFlower([flower.name, flower.useFlower])}
+              >
+                {/* <Image
+                  style={{
+                    width: ScreenWidth(150),
+                    height: ScreenHEIGHT(100),
+                    marginBottom: 5,
+                  }}
+                  source= {require(flower.image)}
+                ></Image> */}
+                <View>
+                  <Text
+                    style={[styles.title, { justifyContent: "flex-start" }]}
+                  >
+                    {flower.name}
+                  </Text>
+                  <Text style={[styles.subTitle, { fontSize: 13 }]}>
+                    {flower.mean}
+                    {"\n"}
+                    {flower.useFlower}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
       </View>
-      {/* <View
-        style={{
-          width: ScreenWidth(330),
-          height: ScreenHEIGHT(125),
-          justifyContent: "flex-end",
-          alignItems: "baseline",
-          marginBottom: ScreenHEIGHT(30),
-        }}
-      >
-        <Text style={[styles.title, { fontSize: 22 }]}>꽃다발 선택</Text>
-        <Text style={[styles.subTitle, { fontSize: 16 }]}>
-          선물할 꽃다발을 선택해주세요
-        </Text>
-      </View> */}
 
-      <Pressable onPress={() => navigation.goBack()}>
+      <Pressable onPress={() => goBack()}>
         <Text>완료</Text>
       </Pressable>
     </View>
   );
 };
 
-const ScreenOrderCheck = ({ navigation: { navigate } }) => {
+const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const onPress = () => {
     navigate("main");
   };
+  const orders = route.params.orders;
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
@@ -725,8 +742,61 @@ const ScreenOrderCheck = ({ navigation: { navigate } }) => {
       </View>
 
       <View style={{ height: "100%" }}>
-        <View style={{ flex: 1.5 }}>
-          <Text>Hello</Text>
+        <View style={{ flex: 1.5 , backgroundColor: COLOR_LGREY, padding: ScreenWidth(20), borderRadius: 20}}>
+          <View style={{ flexDirection: "row", alignItems: "center",marginBottom: ScreenHEIGHT(10)}}>
+            <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+              연인플랜
+            </Text>
+            <Text style={[styles.subTitle, { fontSize: 15 }]}>
+              3회차 진행중
+            </Text>
+          </View>
+          {orders.map((order) => (
+            <View
+              style={[
+                {
+                  height: ScreenHEIGHT(82),
+                  borderColor: COLOR_ORANGE,
+                  borderRadius: 10,
+                  borderWidth: 1.9,
+                  flexDirection: "row",
+                  paddingHorizontal: 30,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                  backgroundColor: "white"
+                },
+              ]}
+            >
+              <View>
+                <Text style={[styles.title, { fontSize: 14 }]}>
+                  {order.dateMonth}월 {order.dateDay}일
+                </Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text
+                    style={[
+                      styles.title,
+                      {
+                        fontSize: 17,
+                        marginRight: ScreenWidth(5),
+                        alignItems: "flex-end",
+                      },
+                    ]}
+                  >
+                    {order.flower === "" ? (
+                      <Text>꽃다발을 선택해주세요</Text>
+                    ) : (
+                      order.flower[0]
+                    )}
+                  </Text>
+                  <Text style={[styles.subTitle, { alignSelf: "center" }]}>
+                    {order.flower === "" ? "" : order.flower[1]}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))}
+      
         </View>
         <View style={{ flex: 1 }}>
           <Pressable onPress={() => setModalVisible(true)}>
