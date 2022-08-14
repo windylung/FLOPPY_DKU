@@ -2,7 +2,7 @@
 const planLists = [
     {
         name : '연인플랜',
-        times : 3,
+        times : 5,
         price : 65000
     },
     {
@@ -12,7 +12,7 @@ const planLists = [
     },
     {
         name : '친구플랜',
-        times : 3,
+        times : 4,
         price : 60000
     },
 ]
