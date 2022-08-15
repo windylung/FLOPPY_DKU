@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -33,6 +33,7 @@ import moment from "moment";
 import flowerLists from "../flowerList/flowerList";
 import { useIsFocused } from "@react-navigation/native";
 import planLists from "../planList/planList";
+import { DBContext, useDB } from "../context";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -130,11 +131,6 @@ const styles = StyleSheet.create({
 });
 
 const ScreenMain = ({ navigation: { navigate } }) => {
-  // let now = new Date();
-  // let month = (now.getMonth() + 1).toLocaleString;
-  // let monthString = now.toLocaleString("en-US", { month: "long" });
-  // let date = now.getDate();
-  // console.log(PixelRatio.get());
   return (
     <View>
       <View
@@ -403,8 +399,10 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
 };
 
 const ScreenPlanManagement = ({ navigation: { navigate } }) => {
+  const realm = useDB();
+  const [plannings, setPlannings] = useState(realm.objects("Planning"));
   const PlanManageView = () => {
-    return (
+    return plannings.map((planning) => (
       <View
         style={{
           width: ScreenWidth(330),
@@ -425,7 +423,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
               }}
             >
               <Text style={[{ fontSize: 20, fontWeight: "900" }]}>
-                연인 플랜
+                {planning.plan}
               </Text>
             </View>
             <View style={{ flex: 1, justifyContent: "center" }}>
@@ -493,8 +491,9 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
           </View>
         </View>
       </View>
-    );
+    ));
   };
+
   return (
     <View style={{ paddingHorizontal: ScreenWidth(30) }}>
       <View
@@ -514,9 +513,9 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
 
       <View style={{ height: "100%" }}>
         <View style={{ flex: 1.5 }}>
-          <PlanManageView />
-          <PlanManageView />
-          <PlanManageView />
+          <ScrollView>
+            <PlanManageView />
+          </ScrollView>
         </View>
         <View style={{ flex: 1 }}>
           <TouchableOpacity onPress={() => navigate("main")}>
@@ -528,7 +527,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
   );
 };
 
-const ScreenPlanMangagementDetail = ({navigation}) => {
+const ScreenPlanMangagementDetail = ({ navigation }) => {
   const OrderState = (props) => {
     return (
       <View style={{ alignItems: "center" }}>
@@ -583,13 +582,14 @@ const ScreenPlanMangagementDetail = ({navigation}) => {
             backgroundColor: COLOR_MGREY,
             alignItems: "center",
             marginBottom: ScreenHEIGHT(15),
-            justifyContent: 'center',
+            justifyContent: "center",
           }}
         >
           <TouchableOpacity onPress={() => navigation.navigate("order")}>
-
-          <Image source={require("../image/PlusIcon.png")} style={{marginBottom: ScreenHEIGHT(10)}}>
-          </Image>
+            <Image
+              source={require("../image/PlusIcon.png")}
+              style={{ marginBottom: ScreenHEIGHT(10) }}
+            ></Image>
           </TouchableOpacity>
           <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
             다음 제작될 꽃다발을 주문해주세요
@@ -599,64 +599,67 @@ const ScreenPlanMangagementDetail = ({navigation}) => {
     );
   };
   return (
-    <View style={{
-      paddingHorizontal: ScreenWidth(30),
-      height: "100%",
-      justifyContent: "space-between",
-    }}>
-    <View>
-      {/* 플랜 이름 및 진행 상황 */}
-      <View
-        style={{
-          width: ScreenWidth(330),
-          height: ScreenHEIGHT(60),
-          borderRadius: 10,
-          backgroundColor: COLOR_ORANGE,
-          marginTop: ScreenHEIGHT(60),
-          marginBottom: ScreenHEIGHT(20),
-          alignItems: "center",
-          alignSelf: "center",
-          flexDirection: "row",
-          paddingHorizontal: ScreenWidth(24),
-        }}
-      >
-        <Text
-          style={[
-            {
-              fontSize: 20,
-              fontWeight: "900",
-              color: "white",
-              marginRight: 8,
-            },
-          ]}
+    <View
+      style={{
+        paddingHorizontal: ScreenWidth(30),
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
+      <View>
+        {/* 플랜 이름 및 진행 상황 */}
+        <View
+          style={{
+            width: ScreenWidth(330),
+            height: ScreenHEIGHT(60),
+            borderRadius: 10,
+            backgroundColor: COLOR_ORANGE,
+            marginTop: ScreenHEIGHT(60),
+            marginBottom: ScreenHEIGHT(20),
+            alignItems: "center",
+            alignSelf: "center",
+            flexDirection: "row",
+            paddingHorizontal: ScreenWidth(24),
+          }}
         >
-          연인 플랜
-        </Text>
-        <Text style={{ color: "white" }}>3회차 진행 중</Text>
-      </View>
-      <ScrollView>
-        {/* 상세 주문 내용 */}
-        <OrderState true={true} />
-        <OrderState true={false} />
-        <OrderState true={false} />
-        <AddOrderBtn />
-      </ScrollView>
-      </View>
-        <View style={{justifyContent: 'flex-end'}}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <NextBtn text={"Back"} />
-          </TouchableOpacity>
+          <Text
+            style={[
+              {
+                fontSize: 20,
+                fontWeight: "900",
+                color: "white",
+                marginRight: 8,
+              },
+            ]}
+          >
+            연인 플랜
+          </Text>
+          <Text style={{ color: "white" }}>3회차 진행 중</Text>
         </View>
+        <ScrollView>
+          {/* 상세 주문 내용 */}
+          <OrderState true={true} />
+          <OrderState true={false} />
+          <OrderState true={false} />
+          <AddOrderBtn />
+        </ScrollView>
+      </View>
+      <View style={{ justifyContent: "flex-end" }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <NextBtn text={"Back"} />
+        </TouchableOpacity>
+      </View>
 
       {/* 꽃다발 주문 연동 버튼 */}
-      
     </View>
   );
 };
 
 const ScreenOrder = ({ navigation: { navigate } }) => {
+  const realm = useDB();
   const [orders, setOrders] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [plannings, setPlannings] = useState(realm.objects("Planning"));
   const plans = planLists;
 
   const addOrder = (plan) => {
@@ -691,93 +694,98 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
     },
   });
 
-  const OrderPlanList = (props) => (
-    //
-    <View
-      style={{
-        height: ScreenHEIGHT(120),
-        width: "100%",
-        borderColor: COLOR_LGREY,
-        borderRadius: 20,
-        marginBottom: 20,
-        flexDirection: "row",
-        ...Platform.select({
-          // ios: {
-          //   shadowColor: "black",
-          //   shadowOpacity: 0.2,
-          //   shadowOffset: {
-          //     height: 3,
-          //     width: 0,
-          //   },
-          //   shadowRadius: 8,
-          // },
-          // android: {
-          //   elevation: 5,
-          // },
-        }),
-      }}
-    >
+  const OrderPlanList = (props) => {
+    const realm = useDB();
+    const planDB = (props) => {
+      setModalVisible(!modalVisible);
+      addOrder(props);
+      realm.write(() => {
+        const plan = realm.create("Planning", {
+          _id: Date.now(),
+          plan: props.name,
+        });
+      });
+    };
+
+    return (
       <View
         style={{
-          flex: 1.8,
-          borderBottomLeftRadius: 20,
-          borderTopLeftRadius: 20,
-          borderWidth: 1.9,
+          height: ScreenHEIGHT(120),
+          width: "100%",
           borderColor: COLOR_LGREY,
-          paddingVertical: "10%",
-          paddingLeft: "5%",
+          borderRadius: 20,
+          marginBottom: 20,
+          flexDirection: "row",
         }}
       >
-        <Text style={[PlanListStyle.mainTitle]}>{props.name}</Text>
-        <Text style={[PlanListStyle.subTitle, { color: "black" }]}>
-          연 {props.times}회 꽃다발 선물
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        onPress={() => addOrder(props)}
-        style={{
-          backgroundColor: COLOR_ORANGE,
-          borderTopRightRadius: 20,
-          borderBottomRightRadius: 20,
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text style={PlanListStyle.title}>{props.price}원</Text>
-
-        <Text style={PlanListStyle.title}>구독하기</Text>
-      </TouchableOpacity>
-    </View>
-  );
-  const OrderPlanView = (props) => (
-    <TouchableOpacity>
-      <View
-        style={[
-          {
-            height: ScreenHEIGHT(75.6),
-            borderColor: COLOR_ORANGE,
-            borderRadius: 10,
+        <View
+          style={{
+            flex: 1.8,
+            borderBottomLeftRadius: 20,
+            borderTopLeftRadius: 20,
             borderWidth: 1.9,
-            flexDirection: "row",
-            paddingHorizontal: 30,
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 25,
-          },
-        ]}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-            {props.planName}
-          </Text>
-          <Text style={[styles.subTitle, { fontSize: 15 }]}>
-            {props.useTimes}회차 진행중
+            borderColor: COLOR_LGREY,
+            paddingVertical: "10%",
+            paddingLeft: "5%",
+          }}
+        >
+          <Text style={[PlanListStyle.mainTitle]}>{props.name}</Text>
+          <Text style={[PlanListStyle.subTitle, { color: "black" }]}>
+            연 {props.times}회 꽃다발 선물
           </Text>
         </View>
+
+        <TouchableOpacity
+          onPress={() => planDB(props)}
+          style={{
+            backgroundColor: COLOR_ORANGE,
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 20,
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={PlanListStyle.title}>{props.price}원</Text>
+
+          <Text style={PlanListStyle.title}>구독하기</Text>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    );
+  };
+  const OrderPlanView = (props) => (
+    <FlatList
+      data={plannings}
+      keyExtractor={(planning) => planning._id + ""}
+      renderItem={({ item }) => (
+        <TouchableOpacity>
+          <View
+            style={[
+              {
+                height: ScreenHEIGHT(75.6),
+                borderColor: COLOR_ORANGE,
+                borderRadius: 10,
+                borderWidth: 1.9,
+                flexDirection: "row",
+                paddingHorizontal: 30,
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 25,
+              },
+            ]}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+                {item.plan}
+              </Text>
+              <Text style={[styles.subTitle, { fontSize: 15 }]}>
+                {props.useTimes}회차 진행중
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )}
+    ></FlatList>
   );
 
   return (
