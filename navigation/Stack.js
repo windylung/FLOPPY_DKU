@@ -34,6 +34,7 @@ import moment from "moment";
 import flowerLists from "../flowerList/flowerList";
 import { useIsFocused } from "@react-navigation/native";
 import planLists from "../planList/planList";
+import { useDB } from "../context";
 
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
@@ -131,11 +132,7 @@ const styles = StyleSheet.create({
 });
 
 const ScreenMain = ({ navigation: { navigate } }) => {
-  // let now = new Date();
-  // let month = (now.getMonth() + 1).toLocaleString;
-  // let monthString = now.toLocaleString("en-US", { month: "long" });
-  // let date = now.getDate();
-  // console.log(PixelRatio.get());
+  const realm = useDB();
   return (
     <View>
       <View
@@ -196,12 +193,9 @@ const ScreenMain = ({ navigation: { navigate } }) => {
               style={[
                 styles.btn,
                 styles.shadow,
-                // {backgroundColor: onfocus ? COLOR_ORANGE : "white"}
               ]}
               onPress={() => navigate("order")}
-              // onFocus={onfocus}
             >
-              {/* () => navigate("Tabs", { screen: "" }) */}
               <Text style={styles.title}>꽃다발{"\n"}주문하기</Text>
               <Text style={styles.subTitle}>꽃다발 예약</Text>
               <Image
@@ -529,7 +523,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
   );
 };
 
-const ScreenPlanMangagementDetail = ({navigation}) => {
+const ScreenPlanMangagementDetail = ({ navigation }) => {
   const OrderState = (props) => {
     return (
       <View style={{ alignItems: "center" }}>
@@ -584,13 +578,14 @@ const ScreenPlanMangagementDetail = ({navigation}) => {
             backgroundColor: COLOR_MGREY,
             alignItems: "center",
             marginBottom: ScreenHEIGHT(15),
-            justifyContent: 'center',
+            justifyContent: "center",
           }}
         >
           <TouchableOpacity onPress={() => navigation.navigate("order")}>
-
-          <Image source={require("../image/PlusIcon.png")} style={{marginBottom: ScreenHEIGHT(10)}}>
-          </Image>
+            <Image
+              source={require("../image/PlusIcon.png")}
+              style={{ marginBottom: ScreenHEIGHT(10) }}
+            ></Image>
           </TouchableOpacity>
           <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
             다음 제작될 꽃다발을 주문해주세요
@@ -600,57 +595,58 @@ const ScreenPlanMangagementDetail = ({navigation}) => {
     );
   };
   return (
-    <View style={{
-      paddingHorizontal: ScreenWidth(30),
-      height: "100%",
-      justifyContent: "space-between",
-    }}>
-    <View>
-      {/* 플랜 이름 및 진행 상황 */}
-      <View
-        style={{
-          width: ScreenWidth(330),
-          height: ScreenHEIGHT(60),
-          borderRadius: 10,
-          backgroundColor: COLOR_ORANGE,
-          marginTop: ScreenHEIGHT(60),
-          marginBottom: ScreenHEIGHT(20),
-          alignItems: "center",
-          alignSelf: "center",
-          flexDirection: "row",
-          paddingHorizontal: ScreenWidth(24),
-        }}
-      >
-        <Text
-          style={[
-            {
-              fontSize: 20,
-              fontWeight: "900",
-              color: "white",
-              marginRight: 8,
-            },
-          ]}
+    <View
+      style={{
+        paddingHorizontal: ScreenWidth(30),
+        height: "100%",
+        justifyContent: "space-between",
+      }}
+    >
+      <View>
+        {/* 플랜 이름 및 진행 상황 */}
+        <View
+          style={{
+            width: ScreenWidth(330),
+            height: ScreenHEIGHT(60),
+            borderRadius: 10,
+            backgroundColor: COLOR_ORANGE,
+            marginTop: ScreenHEIGHT(60),
+            marginBottom: ScreenHEIGHT(20),
+            alignItems: "center",
+            alignSelf: "center",
+            flexDirection: "row",
+            paddingHorizontal: ScreenWidth(24),
+          }}
         >
-          연인 플랜
-        </Text>
-        <Text style={{ color: "white" }}>3회차 진행 중</Text>
-      </View>
-      <ScrollView>
-        {/* 상세 주문 내용 */}
-        <OrderState true={true} />
-        <OrderState true={false} />
-        <OrderState true={false} />
-        <AddOrderBtn />
-      </ScrollView>
-      </View>
-        <View style={{justifyContent: 'flex-end'}}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <NextBtn text={"Back"} />
-          </TouchableOpacity>
+          <Text
+            style={[
+              {
+                fontSize: 20,
+                fontWeight: "900",
+                color: "white",
+                marginRight: 8,
+              },
+            ]}
+          >
+            연인 플랜
+          </Text>
+          <Text style={{ color: "white" }}>3회차 진행 중</Text>
         </View>
+        <ScrollView>
+          {/* 상세 주문 내용 */}
+          <OrderState true={true} />
+          <OrderState true={false} />
+          <OrderState true={false} />
+          <AddOrderBtn />
+        </ScrollView>
+      </View>
+      <View style={{ justifyContent: "flex-end" }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <NextBtn text={"Back"} />
+        </TouchableOpacity>
+      </View>
 
       {/* 꽃다발 주문 연동 버튼 */}
-      
     </View>
   );
 };
