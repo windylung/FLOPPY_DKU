@@ -143,7 +143,7 @@ const ScreenMain = ({ navigation: { navigate } }) => {
       >
         <Image
           source={require("../image/logo_orange.png")}
-          style={{ height: ScreenHEIGHT(36), width: ScreenWidth(137) }}
+          style={{ height: ScreenHEIGHT(36), width: ScreenWidth(180) }}
         ></Image>
       </View>
 
