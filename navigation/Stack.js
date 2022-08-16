@@ -162,6 +162,7 @@ const ScreenMain = ({ navigation: { navigate } }) => {
                 style={{ height: ScreenHEIGHT(91), width: ScreenWidth(91) }}
                 source={require("../image/rose.png")}
               />
+              <Text>Hello</Text>
             </View>
             <View style={{ flex: 25 }}></View>
             <View style={{ flex: 175 }}>
