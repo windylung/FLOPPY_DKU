@@ -8,12 +8,13 @@ import AppLoading from "expo-app-loading";
 import { DBContext } from "./context";
 
 const OrderSchema = {
-  name: "order",
+  name: "Order",
   properties: {
     _id: "int",
     plan: "string",
-    date: "int",
-    flower: "string",
+    month: "int",
+    day: "int",
+    flower: "object",
   },
   primaryKey: "_id",
 };
@@ -33,7 +34,7 @@ export default function App() {
   const [realm, setRealm] = useState(null);
   const startLoading = async () => {
     const connection = await Realm.open({
-      schema: [PlanSchema],
+      schema: [PlanSchema, OrderSchema],
     })
     setRealm(connection);
   };

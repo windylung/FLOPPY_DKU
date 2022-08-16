@@ -38,6 +38,227 @@ import { DBContext, useDB } from "../context";
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
 
+const ScreenOrder = ({ navigation: { navigate } }) => {
+  const realm = useDB();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [plannings, setPlannings] = useState(realm.objects("Planning"));
+  const plans = planLists;
+  const [selectPlan, setSelectPlan] = useState("플랜");
+
+  const PlanListStyle = StyleSheet.create({
+    title: {
+      fontSize: ScreenFONT(15),
+      fontWeight: "600",
+      color: "white",
+      marginBottom: ScreenHEIGHT(6),
+    },
+    subTitle: {
+      fontSize: ScreenFONT(13),
+      fontWeight: "500",
+      color: COLOR_GREY,
+    },
+    mainTitle: {
+      // fontFamily:
+      fontSize: ScreenFONT(18),
+      fontWeight: "600",
+      color: "black",
+      marginBottom: ScreenHEIGHT(6),
+    },
+  });
+
+  const OrderPlanList = (props) => {
+    const realm = useDB();
+    const planDB = (props) => {
+      setModalVisible(!modalVisible);
+      realm.write(() => {
+        const plan = realm.create("Planning", {
+          _id: Date.now(),
+          plan: props.name,
+        });
+      });
+    };
+
+    return (
+      <View
+        style={{
+          height: ScreenHEIGHT(120),
+          width: "100%",
+          borderColor: COLOR_LGREY,
+          borderRadius: 20,
+          marginBottom: 20,
+          flexDirection: "row",
+        }}
+      >
+        <View
+          style={{
+            flex: 1.8,
+            borderBottomLeftRadius: 20,
+            borderTopLeftRadius: 20,
+            borderWidth: 1.9,
+            borderColor: COLOR_LGREY,
+            paddingVertical: "10%",
+            paddingLeft: "5%",
+          }}
+        >
+          <Text style={[PlanListStyle.mainTitle]}>{props.name}</Text>
+          <Text style={[PlanListStyle.subTitle, { color: "black" }]}>
+            연 {props.times}회 꽃다발 선물
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => planDB(props)}
+          style={{
+            backgroundColor: COLOR_ORANGE,
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 20,
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={PlanListStyle.title}>{props.price}원</Text>
+
+          <Text style={PlanListStyle.title}>구독하기</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+  const OrderPlanView = () => {
+    return(
+    <ScrollView>
+      {plannings.map((planning) => (
+        <TouchableOpacity onPress={() => setSelectPlan(planning.plan)} key={planning._id}>
+               <View
+                style={[
+                  {
+                    height: ScreenHEIGHT(75.6),
+                    borderColor: COLOR_ORANGE,
+                    borderRadius: 10,
+                    borderWidth: 1.9,
+                    flexDirection: "row",
+                    paddingHorizontal: 30,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 25,
+                  },
+                ]}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+                    {planning.plan}
+                  </Text>
+                  <Text style={[styles.subTitle, { fontSize: 15 }]}>
+                    회차 진행중
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+
+      ))}
+    </ScrollView>
+  );}
+  
+          
+  return (
+    <View style={{ paddingHorizontal: ScreenWidth(30) }}>
+      <View
+        style={{
+          width: ScreenWidth(330),
+          height: ScreenHEIGHT(125),
+          justifyContent: "flex-end",
+          alignItems: "baseline",
+          marginBottom: ScreenHEIGHT(30),
+        }}
+      >
+        <Text style={[styles.title, { fontSize: 22 }]}>구독 플랜 선택</Text>
+        <Text style={[styles.subTitle, { fontSize: 16 }]}>
+          주문을 진행할 플랜을 선택해주세요
+        </Text>
+      </View>
+      <View style={{ height: "100%" }}>
+        <View style={{ flex: 1.5 }}>
+          {/* 구독한 플랜 리스트 */}
+          <OrderPlanView/>
+          <View
+            style={[
+              styles.shadow,
+              {
+                height: ScreenHEIGHT(75.6),
+                backgroundColor: COLOR_LGREY,
+                borderColor: COLOR_LGREY,
+                borderRadius: 10,
+                borderWidth: 1.8,
+                flexDirection: "row",
+                paddingHorizontal: 30,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 25,
+              },
+            ]}
+          >
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
+                구독 추가하기
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={() => navigate("orderDate", {selectPlan})}>
+            <NextBtn text={"Next"} />
+          </TouchableOpacity>
+        </View>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: ScreenHEIGHT(44),
+            }}
+          >
+            <View style={styless.modalView}>
+              {plans.map((plan) => (
+                <OrderPlanList
+                  name={plan.name}
+                  times={plan.times}
+                  price={plan.price}
+                />
+              ))}
+
+              <Pressable
+                style={[
+                  styless.button,
+                  styless.buttonClose,
+                  { backgroundColor: COLOR_ORANGE, width: ScreenWidth(80) },
+                ]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text
+                  style={[
+                    styles.subtitle,
+                    { color: "white", textAlign: "center", fontWeight: "800" },
+                  ]}
+                >
+                  완료
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </View>
+  );
+};
+
 const NextBtn = (props) => (
   <View
     style={{
@@ -162,7 +383,6 @@ const ScreenMain = ({ navigation: { navigate } }) => {
                 style={{ height: ScreenHEIGHT(91), width: ScreenWidth(91) }}
                 source={require("../image/rose.png")}
               />
-              <Text>Hello</Text>
             </View>
             <View style={{ flex: 25 }}></View>
             <View style={{ flex: 175 }}>
@@ -656,242 +876,7 @@ const ScreenPlanMangagementDetail = ({ navigation }) => {
   );
 };
 
-const ScreenOrder = ({ navigation: { navigate } }) => {
-  const realm = useDB();
-  const [orders, setOrders] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [plannings, setPlannings] = useState(realm.objects("Planning"));
-  const plans = planLists;
 
-  const addOrder = (plan) => {
-    setOrders([
-      ...orders,
-      {
-        planName: plan.name,
-        planTimes: plan.times,
-        orderDetail: [],
-      },
-    ]);
-  };
-
-  const PlanListStyle = StyleSheet.create({
-    title: {
-      fontSize: ScreenFONT(15),
-      fontWeight: "600",
-      color: "white",
-      marginBottom: ScreenHEIGHT(6),
-    },
-    subTitle: {
-      fontSize: ScreenFONT(13),
-      fontWeight: "500",
-      color: COLOR_GREY,
-    },
-    mainTitle: {
-      // fontFamily:
-      fontSize: ScreenFONT(18),
-      fontWeight: "600",
-      color: "black",
-      marginBottom: ScreenHEIGHT(6),
-    },
-  });
-
-  const OrderPlanList = (props) => {
-    const realm = useDB();
-    const planDB = (props) => {
-      setModalVisible(!modalVisible);
-      addOrder(props);
-      realm.write(() => {
-        const plan = realm.create("Planning", {
-          _id: Date.now(),
-          plan: props.name,
-        });
-      });
-    };
-
-    return (
-      <View
-        style={{
-          height: ScreenHEIGHT(120),
-          width: "100%",
-          borderColor: COLOR_LGREY,
-          borderRadius: 20,
-          marginBottom: 20,
-          flexDirection: "row",
-        }}
-      >
-        <View
-          style={{
-            flex: 1.8,
-            borderBottomLeftRadius: 20,
-            borderTopLeftRadius: 20,
-            borderWidth: 1.9,
-            borderColor: COLOR_LGREY,
-            paddingVertical: "10%",
-            paddingLeft: "5%",
-          }}
-        >
-          <Text style={[PlanListStyle.mainTitle]}>{props.name}</Text>
-          <Text style={[PlanListStyle.subTitle, { color: "black" }]}>
-            연 {props.times}회 꽃다발 선물
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => planDB(props)}
-          style={{
-            backgroundColor: COLOR_ORANGE,
-            borderTopRightRadius: 20,
-            borderBottomRightRadius: 20,
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={PlanListStyle.title}>{props.price}원</Text>
-
-          <Text style={PlanListStyle.title}>구독하기</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-  const OrderPlanView = (props) => (
-    <FlatList
-      data={plannings}
-      keyExtractor={(planning) => planning._id + ""}
-      renderItem={({ item }) => (
-        <TouchableOpacity>
-          <View
-            style={[
-              {
-                height: ScreenHEIGHT(75.6),
-                borderColor: COLOR_ORANGE,
-                borderRadius: 10,
-                borderWidth: 1.9,
-                flexDirection: "row",
-                paddingHorizontal: 30,
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 25,
-              },
-            ]}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-                {item.plan}
-              </Text>
-              <Text style={[styles.subTitle, { fontSize: 15 }]}>
-                {props.useTimes}회차 진행중
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      )}
-    ></FlatList>
-  );
-
-  return (
-    <View style={{ paddingHorizontal: ScreenWidth(30) }}>
-      <View
-        style={{
-          width: ScreenWidth(330),
-          height: ScreenHEIGHT(125),
-          justifyContent: "flex-end",
-          alignItems: "baseline",
-          marginBottom: ScreenHEIGHT(30),
-        }}
-      >
-        <Text style={[styles.title, { fontSize: 22 }]}>구독 플랜 선택</Text>
-        <Text style={[styles.subTitle, { fontSize: 16 }]}>
-          주문을 진행할 플랜을 선택해주세요
-        </Text>
-      </View>
-      <View style={{ height: "100%" }}>
-        <View style={{ flex: 1.5 }}>
-          {orders.map((order) => (
-            <OrderPlanView
-              planName={order.planName}
-              times={order.planTimes}
-              useTimes={order.orderDetail.length}
-            />
-          ))}
-          <View
-            style={[
-              styles.shadow,
-              {
-                height: ScreenHEIGHT(75.6),
-                backgroundColor: COLOR_LGREY,
-                borderColor: COLOR_LGREY,
-                borderRadius: 10,
-                borderWidth: 1.8,
-                flexDirection: "row",
-                paddingHorizontal: 30,
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 25,
-              },
-            ]}
-          >
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Text style={[styles.title, { fontSize: 20, marginRight: 8 }]}>
-                구독 추가하기
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity onPress={() => navigate("orderDate")}>
-            <NextBtn text={"Next"} />
-          </TouchableOpacity>
-        </View>
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: ScreenHEIGHT(44),
-            }}
-          >
-            <View style={styless.modalView}>
-              {plans.map((plan) => (
-                <OrderPlanList
-                  name={plan.name}
-                  times={plan.times}
-                  price={plan.price}
-                />
-              ))}
-
-              <Pressable
-                style={[
-                  styless.button,
-                  styless.buttonClose,
-                  { backgroundColor: COLOR_ORANGE, width: ScreenWidth(80) },
-                ]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text
-                  style={[
-                    styles.subtitle,
-                    { color: "white", textAlign: "center", fontWeight: "800" },
-                  ]}
-                >
-                  완료
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-      </View>
-    </View>
-  );
-};
 
 const ScreenNews = () => (
   <View>
@@ -915,24 +900,39 @@ const ScreenPlanList = () => {
   );
 };
 
-const ScreenOrderDate = ({ navigation: { navigate } }) => {
+const ScreenOrderDate = ({ navigation: { navigate }, route }) => {
+
+  const selectPlan = route.params.selectPlan;
+  const realm = useDB();
   const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    const orders = realm.objects("Order");
+    orders.addListener((orders, changes)=> {
+      setOrders(orders.sorted(["month","day"]));
+    });
+    return () => {
+      orders.removeAllListeners();
+    }
+  }, []);
   const addOrder = (date) => {
     const month = Object.entries(date)[1][1]["month"] + 1;
     const day = Object.entries(date)[1][1]["day"];
-    setOrders([
-      ...orders,
-      {
-        id: uuid.v4(),
-        dateMonth: month,
-        dateDay: day,
-        flower: "",
-      },
-    ]);
+    realm.write(() => {
+      const order = realm.create("Order", {
+        _id : Date.now(),
+        plan: selectPlan, 
+        month: month,
+        day: day,
+        flower: ""
+      })
+    })
   };
 
   const onRemove = (id) => {
-    setOrders(orders.filter((todo) => todo.id !== id));
+    realm.write(() => {
+      const feeling = realm.objectForPrimaryKey("Order", id);
+      realm.delete(feeling);
+    })
   };
 
   return (
@@ -961,8 +961,8 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
             onDateChange={addOrder}
           />
 
-          {/* <ScrollView> */}
-          {orders ? (
+          {
+          <ScrollView>
             <View
               style={{
                 marginTop: ScreenHEIGHT(20),
@@ -988,20 +988,21 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
                 >
                   <Text
                     style={[styles.subTitle, { color: "black" }]}
-                    key={order.key}
+                    key={order._id}
                   >
-                    {order.dateMonth + "월 " + order.dateDay + "일"}
+                    {order.month + "월 " + order.day + "일"}
                   </Text>
-                  <TouchableOpacity onPress={() => onRemove(order.id)}>
+                  <TouchableOpacity onPress={() => onRemove(order._id)}>
                     <Text>X</Text>
                   </TouchableOpacity>
                 </View>
               ))}
             </View>
-          ) : null}
+            </ScrollView>
+         }
         </View>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity onPress={() => navigate("orderFlower", { orders })}>
+          <TouchableOpacity onPress={() => navigate("orderFlower")}>
             <NextBtn text={"Next"} />
           </TouchableOpacity>
         </View>
@@ -1009,12 +1010,20 @@ const ScreenOrderDate = ({ navigation: { navigate } }) => {
     </View>
   );
 };
-const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
-  const isFoucused = useIsFocused();
+const ScreenOrderFlower = ({ navigation: { navigate }}) => {
+
+  const realm = useDB();
+  const [orders, setOrders] = useState([]);
   useEffect(() => {
-    const orders = route.params.orders;
-  }, [isFoucused]);
-  const orders = route.params.orders;
+    const orders = realm.objects("Order");
+    orders.addListener((orders, changes)=> {
+      setOrders(orders.sorted(["month","day"]));
+    });
+    return () => {
+      orders.removeAllListeners();
+    }
+  }, []);
+
   const onPressBouquet = (order) => {
     navigate("orderFlowerList", [order]);
   };
@@ -1056,7 +1065,7 @@ const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
               >
                 <View>
                   <Text style={[styles.title, { fontSize: 14 }]}>
-                    {order.dateMonth}월 {order.dateDay}일
+                    {order.month}월 {order.day}일
                   </Text>
                   <View style={{ flexDirection: "row" }}>
                     <Text
@@ -1072,7 +1081,7 @@ const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
                       {order.flower === "" ? (
                         <Text>꽃다발을 선택해주세요</Text>
                       ) : (
-                        order.flower[0]
+                        order.flower
                       )}
                     </Text>
                     <Text style={[styles.subTitle, { alignSelf: "center" }]}>
@@ -1170,7 +1179,7 @@ const ScreenFlowerList = ({ navigation: { goBack }, route }) => {
   const flowers = flowerLists;
   function selectedFlower(flowerBouquet) {
     order.flower = flowerBouquet;
-    console.log(order);
+    // console.log(order);
     goBack();
   }
 
