@@ -472,61 +472,56 @@ const ScreenMain = ({ navigation: { navigate } }) => {
 };
 
 const ScreenStamp = ({ navigation: { goBack } }) => {
-  const Stamp = (props) => {
-    return (
-      <Image
-        style={{
-          width: ScreenWidth(60),
-          height: ScreenHEIGHT(70),
-          resizeMode: "contain",
-          marginHorizontal: ScreenWidth(5),
-          marginVertical: ScreenHEIGHT(10),
-        }}
-        // source={require("../image/flowerStampIcon.png")
-        source={
-          props.true === true
-            ? require("../image/Stamp.png")
-            : require("../image/Stamp_container.png")
-        }
-      ></Image>
-    );
-  };
-  const OrderPlanView = (props) => (
-    <TouchableOpacity>
-      <View
-        style={[
-          {
-            height: ScreenHEIGHT(75.6),
-            borderColor: COLOR_GREY,
-            borderRadius: 10,
-            borderWidth: 1.2,
-            flexDirection: "row",
-            paddingHorizontal: 30,
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginTop: ScreenHEIGHT(15),
-          },
-        ]}
-      >
-        <View>
-          <View style={{ flexDirection: "row", alignItems: "baseline" }}>
-            <Text style={[styles.title, { fontSize: 16, marginRight: 8 }]}>
+
+  const realm = useDB();
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    const orders = realm.objects("Order");
+    orders.addListener((orders, changes) => {
+      setOrders(orders.sorted(["month", "day"]));
+    });
+    return () => {
+      orders.removeAllListeners();
+    };
+  }, []);
+
+  const OrderPlanView = () =>
+    orders.map((order) => (
+      <TouchableOpacity>
+        <View
+          style={[
+            {
+              height: ScreenHEIGHT(75.6),
+              borderColor: COLOR_GREY,
+              borderRadius: 10,
+              borderWidth: 1.2,
+              flexDirection: "row",
+              paddingHorizontal: 30,
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: ScreenHEIGHT(15),
+            },
+          ]}
+        >
+          <View>
+            <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+              <Text style={[styles.title, { fontSize: 16, marginRight: 8 }]}>
+                {/* {props.planName} */}
+                {order.plan}
+              </Text>
+              <Text style={[styles.subTitle, { fontSize: 14 }]}>
+                {/* {props.useTimes}회차 진행중 */}
+                {order.useFlower}
+              </Text>
+            </View>
+            <Text style={[styles.title, { fontSize: 15, marginRight: 8 }]}>
               {/* {props.planName} */}
-              연인플랜 (1회차)
-            </Text>
-            <Text style={[styles.subTitle, { fontSize: 14 }]}>
-              {/* {props.useTimes}회차 진행중 */}
-              노란 튤립
+              {order.month}월 {order.day}일 선물 예정
             </Text>
           </View>
-          <Text style={[styles.title, { fontSize: 14, marginRight: 8 }]}>
-            {/* {props.planName} */}
-            5월 12일 선물 완료
-          </Text>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    ));
 
   return (
     <View
@@ -580,7 +575,7 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
               꽃다발 스탬프
             </Text>
             <Text style={[styles.subTitle, { fontSize: 16 }]}>
-              제작한 꽃다발 3개
+              제작한 꽃다발 {orders.length}개
             </Text>
           </View>
           <View
@@ -590,26 +585,22 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
               flexDirection: "row",
               flexWrap: "wrap",
               width: "100%",
-              justifyContent: "center",
             }}
           >
-            <Stamp true={true} />
-            <Stamp true={true} />
-            <Stamp true={true} />
-            <Stamp />
-            <Stamp />
-            <Stamp />
-            <Stamp />
-            <Stamp />
-
-            {/* 주문을 읽어와서 map으로 true 인자를 넣어주면 될 듯 */}
-            {/* map 내에는 주문 상세 내역 받아올 것  */}
+            {orders.map((order) => {
+              return (<Image style={{
+                width: ScreenWidth(60),
+                height: ScreenHEIGHT(70),
+                resizeMode: "contain",
+                marginHorizontal: ScreenWidth(5),
+                marginVertical: ScreenHEIGHT(10),
+              }} source={require("../image/Stamp.png")}></Image>);
+            })}
+          
           </View>
         </View>
         <View>
           <ScrollView>
-            <OrderPlanView />
-            <OrderPlanView />
             <OrderPlanView />
           </ScrollView>
         </View>
@@ -626,8 +617,13 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
 const ScreenPlanManagement = ({ navigation: { navigate } }) => {
   const realm = useDB();
   const [plannings, setPlannings] = useState(realm.objects("Planning"));
+  const [orders, setorders] = useState(realm.objects("Order"));
   const PlanManageView = () => {
-    return plannings.map((planning) => (
+    
+    return plannings.map((planning) => {
+      const planName = planning.plan;
+      const planOrderNum = orders.filtered(`plan="${planName}"`).length
+      return(
       <View
         style={{
           width: ScreenWidth(330),
@@ -659,7 +655,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
                   color: COLOR_GREY,
                 }}
               >
-                결제일 2022년 10월 20일{"\n"}3회차 진행 중
+                결제일 2022년 10월 20일{"\n"}{planOrderNum}회차 진행 중
               </Text>
             </View>
           </View>
@@ -716,7 +712,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
           </View>
         </View>
       </View>
-    ));
+    )});
   };
 
   return (
@@ -907,7 +903,7 @@ const ScreenOrderDate = ({ navigation: { navigate }, route }) => {
   const realm = useDB();
   const [orders, setOrders] = useState([]);
   useEffect(() => {
-    const orders = realm.objects("Order");
+    const orders = realm.objects("Order").filtered(`plan = "${selectPlan}"`);
     orders.addListener((orders, changes) => {
       setOrders(orders.sorted(["month", "day"]));
     });
@@ -926,6 +922,7 @@ const ScreenOrderDate = ({ navigation: { navigate }, route }) => {
         day: day,
         flower: "",
         useFlower: "",
+        state: "order",
       });
     });
   };
@@ -1004,7 +1001,7 @@ const ScreenOrderDate = ({ navigation: { navigate }, route }) => {
           }
         </View>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity onPress={() => navigate("orderFlower")}>
+          <TouchableOpacity onPress={() => navigate("orderFlower" ,{selectPlan})}>
             <NextBtn text={"Next"} />
           </TouchableOpacity>
         </View>
@@ -1012,11 +1009,12 @@ const ScreenOrderDate = ({ navigation: { navigate }, route }) => {
     </View>
   );
 };
-const ScreenOrderFlower = ({ navigation: { navigate } }) => {
+const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
   const realm = useDB();
+  const selectPlan = route.params.selectPlan;
   const [orders, setOrders] = useState([]);
   useEffect(() => {
-    const orders = realm.objects("Order");
+    const orders = realm.objects("Order").filtered(`plan = "${selectPlan}"`);
     orders.addListener((orders, changes) => {
       setOrders(orders.sorted(["month", "day"]));
     });
@@ -1230,7 +1228,7 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
     navigate("main");
   };
   return (
-    <View style={{ paddingHorizontal: ScreenWidth(30), height: '100%'}}>
+    <View style={{ paddingHorizontal: ScreenWidth(30), height: "100%" }}>
       <View
         style={{
           width: ScreenWidth(330),
@@ -1246,73 +1244,72 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
         </Text>
       </View>
 
-  
+      <View
+        style={{
+          backgroundColor: COLOR_LGREY,
+          padding: ScreenWidth(20),
+          borderRadius: 20,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: ScreenHEIGHT(10),
+          }}
+        ></View>
+        {orders.map((order) => (
           <View
-            style={{
-              backgroundColor: COLOR_LGREY,
-              padding: ScreenWidth(20),
-              borderRadius: 20,
-            }}
-          >
-            <View
-              style={{
+            style={[
+              {
+                height: ScreenHEIGHT(82),
+                borderColor: COLOR_ORANGE,
+                borderRadius: 10,
+                borderWidth: 1.9,
                 flexDirection: "row",
+                paddingHorizontal: 30,
                 alignItems: "center",
-                marginBottom: ScreenHEIGHT(10),
-              }}
-            ></View>
-            {orders.map((order) => (
-              <View
-                style={[
-                  {
-                    height: ScreenHEIGHT(82),
-                    borderColor: COLOR_ORANGE,
-                    borderRadius: 10,
-                    borderWidth: 1.9,
-                    flexDirection: "row",
-                    paddingHorizontal: 30,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 10,
-                    backgroundColor: "white",
-                  },
-                ]}
-              >
-                <View>
-                  <Text style={[styles.title, { fontSize: 14 }]}>
-                    {order.month}월 {order.day}일
-                  </Text>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={[
-                        styles.title,
-                        {
-                          fontSize: 17,
-                          marginRight: ScreenWidth(5),
-                          alignSelf: "center",
-                        },
-                      ]}
-                    >
-                      {order.flower === "" ? (
-                        <Text>꽃다발을 선택해주세요</Text>
-                      ) : (
-                        order.flower
-                      )}
-                    </Text>
-                    <Text style={[styles.subTitle, { alignSelf: "center" }]}>
-                      {order.flower === "" ? "" : order.useFlower}
-                    </Text>
-                  </View>
-                </View>
+                justifyContent: "space-between",
+                marginBottom: 10,
+                backgroundColor: "white",
+              },
+            ]}
+          >
+            <View>
+              <Text style={[styles.title, { fontSize: 14 }]}>
+                {order.month}월 {order.day}일
+              </Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text
+                  style={[
+                    styles.title,
+                    {
+                      fontSize: 17,
+                      marginRight: ScreenWidth(5),
+                      alignSelf: "center",
+                    },
+                  ]}
+                >
+                  {order.flower === "" ? (
+                    <Text>꽃다발을 선택해주세요</Text>
+                  ) : (
+                    order.flower
+                  )}
+                </Text>
+                <Text style={[styles.subTitle, { alignSelf: "center" }]}>
+                  {order.flower === "" ? "" : order.useFlower}
+                </Text>
               </View>
-            ))}
+            </View>
           </View>
-        
-        <View style={{position: 'absolute',  left: 30, right: 30, bottom: 16}}>
-          <Pressable onPress={() => setModalVisible(true)}>
-            <NextBtn text={"Order"} />
-          </Pressable>
-        </View>
+        ))}
+      </View>
+
+      <View style={{ position: "absolute", left: 30, right: 30, bottom: 16 }}>
+        <Pressable onPress={() => setModalVisible(true)}>
+          <NextBtn text={"Order"} />
+        </Pressable>
+      </View>
 
       <View
         style={{

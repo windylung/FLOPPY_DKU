@@ -15,7 +15,8 @@ const OrderSchema = {
     month: "int",
     day: "int",
     flower: "string",
-    useFlower : "string"
+    useFlower : "string",
+    state : "string"
   },
   primaryKey: "_id",
 };
