@@ -14,7 +14,8 @@ const OrderSchema = {
     plan: "string",
     month: "int",
     day: "int",
-    flower: "object",
+    flower: "string",
+    useFlower : "string"
   },
   primaryKey: "_id",
 };
