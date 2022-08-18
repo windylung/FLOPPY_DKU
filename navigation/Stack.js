@@ -42,9 +42,9 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
   const realm = useDB();
   const [modalVisible, setModalVisible] = useState(false);
   const [plannings, setPlannings] = useState(realm.objects("Planning"));
+  const [orders, setOrders] = useState(realm.objects("Order"));
   const plans = planLists;
   const [selectPlan, setSelectPlan] = useState("플랜");
-
   const PlanListStyle = StyleSheet.create({
     title: {
       fontSize: ScreenFONT(15),
@@ -127,11 +127,15 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
   const OrderPlanView = () => {
     return (
       <ScrollView>
-        {plannings.map((planning) => (
+        {plannings.map((planning) => {
+          const planName = planning.plan;
+          const planOrderNum = orders.filtered(`plan="${planName}"`).length
+          return(
           <TouchableOpacity
             onPress={() => setSelectPlan(planning.plan)}
             key={planning._id}
           >
+            
             <View
               style={[
                 {
@@ -152,12 +156,12 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
                   {planning.plan}
                 </Text>
                 <Text style={[styles.subTitle, { fontSize: 15 }]}>
-                  회차 진행중
+                  {planOrderNum}회차 진행중
                 </Text>
               </View>
             </View>
-          </TouchableOpacity>
-        ))}
+          </TouchableOpacity>)})
+          }
       </ScrollView>
     );
   };
@@ -356,6 +360,7 @@ const styles = StyleSheet.create({
 });
 
 const ScreenMain = ({ navigation: { navigate } }) => {
+  
   return (
     <View>
       <View
@@ -775,7 +780,7 @@ const ScreenPlanMangagementDetail = ({ navigation }) => {
 
           <View style={{ flex: 3 }}>
             <Text style={{ fontSize: 15, fontWeight: "500", marginBottom: 6 }}>
-              5월 12일 (3회차){"\n"}장미
+              12월 25일 (3회차){"\n"}장미
             </Text>
             <Text
               style={{
