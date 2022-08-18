@@ -366,6 +366,11 @@ const styles = StyleSheet.create({
 });
 
 const ScreenMain = ({ navigation: { navigate } }) => {
+  const realm = useDB();
+  const [orders, setorders] = useState(realm.objects("Order"));
+  const nearOrder = orders.sorted("_id")[0];
+  const orderDate = new Date(nearOrder["_id"]);
+
   return (
     <View>
       <View
@@ -400,13 +405,30 @@ const ScreenMain = ({ navigation: { navigate } }) => {
             </View>
             <View style={{ flex: 25 }}></View>
             <View style={{ flex: 175 }}>
-              <Text style={[styles.title, { fontWeight: "700" }]}>
-                꽃다발을{"\n"}제작하고 있어요
+              <Text
+                style={[
+                  {
+                    color: COLOR_ORANGE,
+                    fontWeight: "900",
+                    fontSize: 14,
+                    marginBottom: 7,
+                  },
+                ]}
+              >
+                {nearOrder.plan}
               </Text>
-              <Text style={styles.subTitle}>8월 15일 이지수님께 전달예정</Text>
+              <Text style={[styles.title, { fontWeight: "700" }]}>
+                {nearOrder.state === "order" || "arrive"
+                  ? "꽃다발을\n제작하고 있어요 "
+                  : "꽃다발 주문이\n필요해요"}
+                {/* nearOrder.state === 'order' ? : 주문이 없어요{"\n"} */}
+              </Text>
+              <Text style={styles.subTitle}>
+                {nearOrder.month}월 {nearOrder.day}일 전달 예정
+              </Text>
             </View>
           </View>
-          <View
+          {/* <View
             style={{
               height: ScreenHEIGHT(9),
               flexDirection: "row",
@@ -418,7 +440,7 @@ const ScreenMain = ({ navigation: { navigate } }) => {
               style={[styles.circleBtn, { backgroundColor: COLOR_ORANGE }]}
             ></TouchableOpacity>
             <TouchableOpacity style={styles.circleBtn}></TouchableOpacity>
-          </View>
+          </View> */}
         </View>
         <View>
           <View style={styles.btnView}>
@@ -448,7 +470,7 @@ const ScreenMain = ({ navigation: { navigate } }) => {
               <Text style={styles.subTitle}>주문 내역 확인</Text>
               <Image
                 style={styles.btnImage}
-                source={require("../image/megaphone.png")}
+                source={require("../image/stampIcon.png")}
               ></Image>
             </TouchableOpacity>
           </View>
@@ -541,27 +563,11 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
       }}
     >
       <View>
-        {/* <View
-        style={{
-          width: ScreenWidth(330),
-          height: ScreenHEIGHT(125),
-          justifyContent: "flex-end",
-          alignItems: "baseline",
-          marginBottom: ScreenHEIGHT(30),
-        }}
-        >
-        <Text style={[styles.title, { fontSize: 22 }]}>구독 플랜 선택</Text>
-        <Text style={[styles.subTitle, { fontSize: 16 }]}>
-        주문을 진행할 플랜을 선택해주세요
-        </Text>
-      </View> */}
-
         <View
           style={{
             marginTop: ScreenHEIGHT(60),
             marginBottom: ScreenHEIGHT(20),
             width: ScreenWidth(330),
-            height: ScreenHEIGHT(250),
             backgroundColor: COLOR_ORANGE,
             justifyContent: "flex-end",
             borderRadius: 10,
@@ -570,7 +576,6 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
         >
           <View
             style={{
-              flex: 1,
               flexDirection: "row",
               justifyContent: "space-between",
             }}
@@ -589,8 +594,6 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
           </View>
           <View
             style={{
-              flex: 4,
-
               flexDirection: "row",
               flexWrap: "wrap",
               width: "100%",
@@ -613,12 +616,55 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
           </View>
         </View>
         <View>
-          <ScrollView>
-            <OrderPlanView />
+          <ScrollView  style={{marginBottom: ScreenHEIGHT(100)}} >
+            {/* <OrderPlanView />
+             */}
+            {orders.map((order) => (
+              <TouchableOpacity>
+                <View
+                  style={[
+                    {
+                      height: ScreenHEIGHT(75.6),
+                      borderColor: COLOR_GREY,
+                      borderRadius: 10,
+                      borderWidth: 1.2,
+                      flexDirection: "row",
+                      paddingHorizontal: 30,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginTop: ScreenHEIGHT(15),
+                    },
+                  ]}
+                >
+                  <View>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "baseline" }}
+                    >
+                      <Text
+                        style={[styles.title, { fontSize: 16, marginRight: 8 }]}
+                      >
+                        {/* {props.planName} */}
+                        {order.plan}
+                      </Text>
+                      <Text style={[styles.subTitle, { fontSize: 14 }]}>
+                        {/* {props.useTimes}회차 진행중 */}
+                        {order.useFlower}
+                      </Text>
+                    </View>
+                    <Text
+                      style={[styles.title, { fontSize: 15, marginRight: 8 }]}
+                    >
+                      {/* {props.planName} */}
+                      {order.month}월 {order.day}일 선물 예정
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
         </View>
       </View>
-      <View>
+      <View style={{ position: "absolute", left: 30, right: 30, bottom: 16 }}>
         <TouchableOpacity onPress={() => goBack()}>
           <NextBtn text={"Home"} />
         </TouchableOpacity>
@@ -863,7 +909,6 @@ const ScreenPlanMangagementDetail = ({ navigation, route }) => {
         <ScrollView>
           {/* 상세 주문 내용 */}
           {orders.map((order) => {
-
             return (
               <View style={{ alignItems: "center" }}>
                 <View
@@ -871,7 +916,8 @@ const ScreenPlanMangagementDetail = ({ navigation, route }) => {
                     width: ScreenWidth(330),
                     height: ScreenHEIGHT(115),
                     borderRadius: 10,
-                    borderColor: order.state === 'order' ? COLOR_ORANGE : COLOR_MGREY,
+                    borderColor:
+                      order.state === "order" ? COLOR_ORANGE : COLOR_MGREY,
                     borderWidth: 1.3,
                     alignItems: "center",
                     flexDirection: "row",
@@ -880,7 +926,7 @@ const ScreenPlanMangagementDetail = ({ navigation, route }) => {
                 >
                   <Image
                     source={
-                      order.state === 'order'
+                      order.state === "order"
                         ? require("../image/rosebouquet.png")
                         : require("../image/rosebouquet_Black.png")
                     }
@@ -899,7 +945,8 @@ const ScreenPlanMangagementDetail = ({ navigation, route }) => {
                         marginBottom: 6,
                       }}
                     >
-                      {order.month}월 {order.day}일 (3회차){"\n"}{order.useFlower}
+                      {order.month}월 {order.day}일 (3회차){"\n"}
+                      {order.useFlower}
                     </Text>
                     <Text
                       style={{
@@ -908,7 +955,7 @@ const ScreenPlanMangagementDetail = ({ navigation, route }) => {
                         fontWeight: "700",
                       }}
                     >
-                      {order.state === 'order' ? "제작 중" : "선물 완료"}
+                      {order.state === "order" ? "제작 중" : "선물 완료"}
                     </Text>
                   </View>
                 </View>
