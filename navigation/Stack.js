@@ -368,8 +368,18 @@ const styles = StyleSheet.create({
 const ScreenMain = ({ navigation: { navigate } }) => {
   const realm = useDB();
   const [orders, setorders] = useState(realm.objects("Order"));
-  const nearOrder = orders.sorted("_id")[0];
-  const orderDate = new Date(nearOrder["_id"]);
+  const [orderDate, setOrderDate] = useState("")
+  const [nearOrderDate, setNearOrderDate] = useState("")
+  useEffect( () => {
+    setOrderDate(new Date(nearOrderDate["_id"]));  
+    if (orders.length > 0)
+    {
+      // 가장 빠른 주문
+      setNearOrderDate(orders.sorted("_id")[0]);
+    }
+
+  },[])
+  
 
   return (
     <View>
@@ -388,7 +398,7 @@ const ScreenMain = ({ navigation: { navigate } }) => {
       </View>
 
       <View style={{ backgroundColor: COLOR_BG }}>
-        <View style={[styles.statusView, styles.shadow]}>
+        <View style={[styles.statusView, styles.shadow, {backgroundColor: nearOrderDate !== "" ?  "white" : COLOR_LGREY}]}>
           <View
             style={{
               height: ScreenHEIGHT(110),
@@ -415,16 +425,20 @@ const ScreenMain = ({ navigation: { navigate } }) => {
                   },
                 ]}
               >
-                {nearOrder.plan}
+              
+                {nearOrderDate !== "" ?  nearOrderDate.plan : "구독 중인 플랜이 없어요"}
               </Text>
               <Text style={[styles.title, { fontWeight: "700" }]}>
-                {nearOrder.state === "order" || "arrive"
+                
+                {nearOrderDate.state === "order"
                   ? "꽃다발을\n제작하고 있어요 "
                   : "꽃다발 주문이\n필요해요"}
-                {/* nearOrder.state === 'order' ? : 주문이 없어요{"\n"} */}
               </Text>
               <Text style={styles.subTitle}>
-                {nearOrder.month}월 {nearOrder.day}일 전달 예정
+              {/* {nearOrderDate !== "" ? {nearOrderDate.month}  : ""} */}
+              {nearOrderDate !== "" ? nearOrderDate.month + "월" + nearOrderDate.day + "일 전달 예정": ""}
+              
+                
               </Text>
             </View>
           </View>
@@ -488,7 +502,7 @@ const ScreenMain = ({ navigation: { navigate } }) => {
               ></Image>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.btn, styles.shadow]}>
+            <TouchableOpacity style={[styles.btn, styles.shadow]} onPress={() => navigate("floppyStory")}>
               <Text style={styles.title}>FLOPPY{"\n"}이야기</Text>
               <Text style={styles.subTitle}>FLOPPY의 소식</Text>
               <Image
@@ -1489,6 +1503,56 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
   );
 };
 
+const ScreenFloppyStory = () => {
+  return (
+    
+    <View
+      style={{
+        paddingHorizontal: ScreenWidth(30),
+        height: "100%",
+        backgroundColor: "white",
+      }}
+    >
+      <View
+        style={{
+          width: ScreenWidth(330),
+          height: ScreenHEIGHT(125),
+          justifyContent: "flex-end",
+          alignItems: "baseline",
+          marginBottom: ScreenHEIGHT(30),
+        }}
+      >
+        <Text style={[styles.title, { fontSize: 22 }]}>FLOPPY 이야기</Text>
+        <Text style={[styles.subTitle, { fontSize: 16 }]}>
+        FLOPPY의 다양한 소식 / 이야기
+        </Text>
+      </View>
+      <Text style={styles.title}>튤립의 꽃말</Text>
+      <View style={{flexDirection: 'row', flex: 1}}>
+        <ScrollView horizontal = {true}>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/1.png")}></Image>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/2.png")}></Image>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/3.png")}></Image>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/4.png")}></Image>
+        </ScrollView>
+        
+      </View>
+      <Text style={styles.title}>하바리움의 모든 것</Text>
+      <View style={{flexDirection: 'row', flex: 1}}>
+      <ScrollView horizontal = {true}>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/5.png")}></Image>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/6.png")}></Image>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/7.png")}></Image>
+          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/8.png")}></Image>
+        </ScrollView>
+        
+
+      </View>
+
+    </View>
+  )
+}
+
 const styless = StyleSheet.create({
   centeredView: {
     justifyContent: "center",
@@ -1554,6 +1618,7 @@ const Stack = () => (
     <NativeStack.Screen name="orderFlower" component={ScreenOrderFlower} />
     <NativeStack.Screen name="orderFlowerList" component={ScreenFlowerList} />
     <NativeStack.Screen name="orderCheck" component={ScreenOrderCheck} />
+    <NativeStack.Screen name="floppyStory" component={ScreenFloppyStory} />
 
     {/* 구독 플랜 관리 화면 */}
     <NativeStack.Screen

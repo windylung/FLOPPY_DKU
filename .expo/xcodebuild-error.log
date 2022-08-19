@@ -1,8 +1,2 @@
-2022-08-19 06:11:24.747 xcodebuild[82503:1291313] Requested but did not find extension point with identifier Xcode.IDEKit.ExtensionSentinelHostApplications for extension Xcode.DebuggerFoundation.AppExtensionHosts.watchOS of plug-in com.apple.dt.IDEWatchSupportCore
-2022-08-19 06:11:24.747 xcodebuild[82503:1291313] Requested but did not find extension point with identifier Xcode.IDEKit.ExtensionPointIdentifierToBundleIdentifier for extension Xcode.DebuggerFoundation.AppExtensionToBundleIdentifierMap.watchOS of plug-in com.apple.dt.IDEWatchSupportCore
-** BUILD FAILED **
-
-
-The following build commands failed:
-	Ld /Users/jisoolee/Library/Developer/Xcode/DerivedData/FLOPPY-gcynfyeesrvmanayouqwavgckkln/Build/Products/Debug-iphonesimulator/FLOPPY.app/FLOPPY normal (in target 'FLOPPY' from project 'FLOPPY')
-(1 failure)
+2022-08-19 09:18:37.577 xcodebuild[56570:1667874] Requested but did not find extension point with identifier Xcode.IDEKit.ExtensionSentinelHostApplications for extension Xcode.DebuggerFoundation.AppExtensionHosts.watchOS of plug-in com.apple.dt.IDEWatchSupportCore
+2022-08-19 09:18:37.577 xcodebuild[56570:1667874] Requested but did not find extension point with identifier Xcode.IDEKit.ExtensionPointIdentifierToBundleIdentifier for extension Xcode.DebuggerFoundation.AppExtensionToBundleIdentifierMap.watchOS of plug-in com.apple.dt.IDEWatchSupportCore
