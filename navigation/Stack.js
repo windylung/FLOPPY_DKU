@@ -39,6 +39,7 @@ import { DBContext, useDB } from "../context";
 // const WINDOW_WIDTH = Dimensions.get("window").width;
 // const WINDOW_HEIGHT = Dimensions.get("window").height;
 
+
 const ScreenOrder = ({ navigation: { navigate } }) => {
   const realm = useDB();
   const [modalVisible, setModalVisible] = useState(false);
@@ -242,6 +243,7 @@ const ScreenOrder = ({ navigation: { navigate } }) => {
             <View style={styless.modalView}>
               {plans.map((plan) => (
                 <OrderPlanList
+                  key={plan._id}
                   name={plan.name}
                   times={plan.times}
                   price={plan.price}
@@ -368,18 +370,15 @@ const styles = StyleSheet.create({
 const ScreenMain = ({ navigation: { navigate } }) => {
   const realm = useDB();
   const [orders, setorders] = useState(realm.objects("Order"));
-  const [orderDate, setOrderDate] = useState("")
-  const [nearOrderDate, setNearOrderDate] = useState("")
-  useEffect( () => {
-    setOrderDate(new Date(nearOrderDate["_id"]));  
-    if (orders.length > 0)
-    {
+  const [orderDate, setOrderDate] = useState("");
+  const [nearOrderDate, setNearOrderDate] = useState("");
+  useEffect(() => {
+    setOrderDate(new Date(nearOrderDate["_id"]));
+    if (orders.length > 0) {
       // 가장 빠른 주문
       setNearOrderDate(orders.sorted("_id")[0]);
     }
-
-  },[])
-  
+  }, []);
 
   return (
     <View>
@@ -398,7 +397,13 @@ const ScreenMain = ({ navigation: { navigate } }) => {
       </View>
 
       <View style={{ backgroundColor: COLOR_BG }}>
-        <View style={[styles.statusView, styles.shadow, {backgroundColor: nearOrderDate !== "" ?  "white" : COLOR_LGREY}]}>
+        <View
+          style={[
+            styles.statusView,
+            styles.shadow,
+            { backgroundColor: nearOrderDate !== "" ? "white" : COLOR_LGREY },
+          ]}
+        >
           <View
             style={{
               height: ScreenHEIGHT(110),
@@ -425,20 +430,23 @@ const ScreenMain = ({ navigation: { navigate } }) => {
                   },
                 ]}
               >
-              
-                {nearOrderDate !== "" ?  nearOrderDate.plan : "구독 중인 플랜이 없어요"}
+                {nearOrderDate !== ""
+                  ? nearOrderDate.plan
+                  : "구독 중인 플랜이 없어요"}
               </Text>
               <Text style={[styles.title, { fontWeight: "700" }]}>
-                
                 {nearOrderDate.state === "order"
                   ? "꽃다발을\n제작하고 있어요 "
                   : "꽃다발 주문이\n필요해요"}
               </Text>
               <Text style={styles.subTitle}>
-              {/* {nearOrderDate !== "" ? {nearOrderDate.month}  : ""} */}
-              {nearOrderDate !== "" ? nearOrderDate.month + "월" + nearOrderDate.day + "일 전달 예정": ""}
-              
-                
+                {/* {nearOrderDate !== "" ? {nearOrderDate.month}  : ""} */}
+                {nearOrderDate !== ""
+                  ? nearOrderDate.month +
+                    "월" +
+                    nearOrderDate.day +
+                    "일 전달 예정"
+                  : ""}
               </Text>
             </View>
           </View>
@@ -502,7 +510,10 @@ const ScreenMain = ({ navigation: { navigate } }) => {
               ></Image>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.btn, styles.shadow]} onPress={() => navigate("floppyStory")}>
+            <TouchableOpacity
+              style={[styles.btn, styles.shadow]}
+              onPress={() => navigate("floppyStory")}
+            >
               <Text style={styles.title}>FLOPPY{"\n"}이야기</Text>
               <Text style={styles.subTitle}>FLOPPY의 소식</Text>
               <Image
@@ -624,17 +635,18 @@ const ScreenStamp = ({ navigation: { goBack } }) => {
                     marginVertical: ScreenHEIGHT(10),
                   }}
                   source={require("../image/Stamp.png")}
+                  key={order._id}
                 ></Image>
               );
             })}
           </View>
         </View>
         <View>
-          <ScrollView  style={{marginBottom: ScreenHEIGHT(100)}} >
+          <ScrollView style={{ marginBottom: ScreenHEIGHT(100) }}>
             {/* <OrderPlanView />
              */}
             {orders.map((order) => (
-              <TouchableOpacity>
+              <TouchableOpacity key={order._id}>
                 <View
                   style={[
                     {
@@ -708,6 +720,7 @@ const ScreenPlanManagement = ({ navigation: { navigate } }) => {
 
       return (
         <View
+          key={planning._id}
           style={{
             width: ScreenWidth(330),
             height: ScreenHEIGHT(120),
@@ -924,7 +937,7 @@ const ScreenPlanMangagementDetail = ({ navigation, route }) => {
           {/* 상세 주문 내용 */}
           {orders.map((order) => {
             return (
-              <View style={{ alignItems: "center" }}>
+              <View key={order._id} style={{ alignItems: "center" }}>
                 <View
                   style={{
                     width: ScreenWidth(330),
@@ -1086,6 +1099,7 @@ const ScreenOrderDate = ({ navigation: { navigate }, route }) => {
               >
                 {orders.map((order) => (
                   <View
+                    key={order._id}
                     style={{
                       backgroundColor: COLOR_LGREY,
                       width: ScreenWidth(140),
@@ -1163,6 +1177,7 @@ const ScreenOrderFlower = ({ navigation: { navigate }, route }) => {
           <ScrollView>
             {orders.map((order) => (
               <View
+                key={order._id}
                 style={[
                   {
                     height: ScreenHEIGHT(82),
@@ -1379,6 +1394,7 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
         <ScrollView>
           {orders.map((order) => (
             <View
+            key={order._id}
               style={[
                 {
                   height: ScreenHEIGHT(82),
@@ -1505,7 +1521,6 @@ const ScreenOrderCheck = ({ navigation: { navigate }, route }) => {
 
 const ScreenFloppyStory = () => {
   return (
-    
     <View
       style={{
         paddingHorizontal: ScreenWidth(30),
@@ -1524,34 +1539,86 @@ const ScreenFloppyStory = () => {
       >
         <Text style={[styles.title, { fontSize: 22 }]}>FLOPPY 이야기</Text>
         <Text style={[styles.subTitle, { fontSize: 16 }]}>
-        FLOPPY의 다양한 소식 / 이야기
+          FLOPPY의 다양한 소식 / 이야기
         </Text>
       </View>
       <Text style={styles.title}>튤립의 꽃말</Text>
-      <View style={{flexDirection: 'row', flex: 1}}>
-        <ScrollView horizontal = {true}>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/1.png")}></Image>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/2.png")}></Image>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/3.png")}></Image>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/4.png")}></Image>
+      <View style={{ flexDirection: "row", flex: 1 }}>
+        <ScrollView horizontal={true}>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/1.png")}
+          ></Image>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/2.png")}
+          ></Image>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/3.png")}
+          ></Image>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/4.png")}
+          ></Image>
         </ScrollView>
-        
       </View>
       <Text style={styles.title}>하바리움의 모든 것</Text>
-      <View style={{flexDirection: 'row', flex: 1}}>
-      <ScrollView horizontal = {true}>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/5.png")}></Image>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/6.png")}></Image>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/7.png")}></Image>
-          <Image style = {{width: ScreenWidth(240), height: ScreenHEIGHT(300), resizeMode: "contain"}} source={require("../image_FLOPPYSTORY/8.png")}></Image>
+      <View style={{ flexDirection: "row", flex: 1 }}>
+        <ScrollView horizontal={true}>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/5.png")}
+          ></Image>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/6.png")}
+          ></Image>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/7.png")}
+          ></Image>
+          <Image
+            style={{
+              width: ScreenWidth(240),
+              height: ScreenHEIGHT(300),
+              resizeMode: "contain",
+            }}
+            source={require("../image_FLOPPYSTORY/8.png")}
+          ></Image>
         </ScrollView>
-        
-
       </View>
-
     </View>
-  )
-}
+  );
+};
 
 const styless = StyleSheet.create({
   centeredView: {

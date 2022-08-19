@@ -1,11 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Stack from "./navigation/Stack";
 import { NavigationContainer } from "@react-navigation/native";
 import Realm from "realm";
 import AppLoading from "expo-app-loading";
 import { DBContext } from "./context";
+import SplashScreen from 'react-native-splash-screen';
 
 const OrderSchema = {
   name: "Order",
@@ -40,6 +41,7 @@ export default function App() {
     })
     setRealm(connection);
   };
+
   const onFinish = () => setReady(true);
   if (!ready) {
     return (
